@@ -10,3 +10,8 @@ spring:
       ddl-auto: validate
   flyway:
     enabled: true
+
+mss:
+  api-url:
+    page-size: 100
+    products-by-category-and-page-and-size-url: ${PRODUCTS-BY-CATEGORY-AND-PAGE-AND-SIZE-URL}

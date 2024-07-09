@@ -1,3 +1,8 @@
 spring:
   datasource:
     url: jdbc:tc:mysql:8.0.38:///
+
+mss:
+  api-url:
+    page-size: 100
+    products-by-category-and-page-and-size-url: https://test.url?categoryId=%s&page=%s&size=%s
