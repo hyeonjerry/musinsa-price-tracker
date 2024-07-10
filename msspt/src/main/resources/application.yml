@@ -13,5 +13,5 @@ spring:
 
 mss:
   api-url:
-    page-size: 100
-    products-by-category-and-page-and-size-url: ${PRODUCTS-BY-CATEGORY-AND-PAGE-AND-SIZE-URL}
+    catalog-page-size: 100
+    catalog-by-category-and-page-and-size-url: ${CATALOG-BY-CATEGORY-AND-PAGE-AND-SIZE-URL}

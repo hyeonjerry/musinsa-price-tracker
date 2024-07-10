@@ -28,9 +28,9 @@ class MssptApplicationTests {
     @Autowired
     private MssApiUrlProperties mssApiUrlProperties;
 
-    @Value("${mss.api-url.page-size}")
+    @Value("${mss.api-url.catalog-page-size}")
     private int pageSize;
-    @Value("${mss.api-url.products-by-category-and-page-and-size-url}")
+    @Value("${mss.api-url.catalog-by-category-and-page-and-size-url}")
     private String productsByCategoryUrl;
 
     @ParameterizedTest
@@ -57,6 +57,15 @@ class MssptApplicationTests {
       final String actual = mssApiUrlProperties.getProductsUrl(categoryId, page);
       // then
       assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("pageSize를 반환한다.")
+    void getPageSizeTest() {
+      // when
+      final int actual = mssApiUrlProperties.getCatalogPageSize();
+      // then
+      assertThat(actual).isEqualTo(pageSize);
     }
   }
 }

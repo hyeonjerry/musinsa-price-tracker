@@ -9,10 +9,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class MssApiUrlProperties {
 
   @Getter
-  private final int pageSize;
-  private final String productsByCategoryAndPageAndSizeUrl;
+  private final int catalogPageSize;
+  private final String catalogByCategoryAndPageAndSizeUrl;
 
   public String getProductsUrl(final String categoryId, final int page) {
-    return String.format(productsByCategoryAndPageAndSizeUrl, categoryId, page, pageSize);
+    return String.format(catalogByCategoryAndPageAndSizeUrl, categoryId, page, catalogPageSize);
   }
 }
