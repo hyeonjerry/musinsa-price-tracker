@@ -64,4 +64,9 @@ public class Product {
     this.brandId = brandId;
     this.category = category;
   }
+
+  public void addLastPrice(final int price) {
+    final PriceHistory priceHistory = new PriceHistory(this, price);
+    priceHistories.add(priceHistory);
+  }
 }
