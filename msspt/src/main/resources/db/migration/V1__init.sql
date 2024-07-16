@@ -9,8 +9,8 @@ create table brand
 
 create table category
 (
-    category_id varchar(10) not null primary key,
-    name        varchar(255) null,
+    category_id varchar(10)  not null primary key,
+    name        varchar(255) not null,
     created_at  datetime(6)  null
 );
 
@@ -29,8 +29,8 @@ create table product
 create table price_history
 (
     id         bigint auto_increment primary key,
-    price      int null,
-    product_id bigint not null,
+    price      int         not null,
+    product_id bigint      not null,
     created_at datetime(6) null
 );
 

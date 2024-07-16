@@ -30,6 +30,7 @@ public class PriceHistory {
   @JoinColumn(nullable = false, name = "product_id")
   private Product product;
 
+  @Column(nullable = false)
   private Integer price;
 
   @CreatedDate

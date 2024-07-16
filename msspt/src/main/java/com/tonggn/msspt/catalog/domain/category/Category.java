@@ -20,6 +20,7 @@ public class Category {
   @EmbeddedId
   private CategoryId id;
 
+  @Column(nullable = false)
   private String name;
 
   @CreatedDate
