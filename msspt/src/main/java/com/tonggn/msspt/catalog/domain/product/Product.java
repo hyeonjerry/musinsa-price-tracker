@@ -2,6 +2,7 @@ package com.tonggn.msspt.catalog.domain.product;
 
 import com.tonggn.msspt.catalog.domain.brand.BrandId;
 import com.tonggn.msspt.catalog.domain.category.CategoryId;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -40,7 +41,8 @@ public class Product {
   @Column(nullable = false)
   private Integer normalPrice;
 
-  @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST,
+      CascadeType.MERGE})
   private List<PriceHistory> priceHistories = new ArrayList<>();
 
   @Column(nullable = false)
@@ -69,8 +71,15 @@ public class Product {
     this.category = category;
   }
 
-  public void addLastPrice(final int price) {
-    final PriceHistory priceHistory = new PriceHistory(this, price);
-    priceHistories.add(priceHistory);
+  public void addLastPriceIfNew(final int price) {
+    if (isNewPrice(price)) {
+      final PriceHistory priceHistory = new PriceHistory(this, price);
+      priceHistories.add(priceHistory);
+    }
+  }
+
+  private boolean isNewPrice(final int price) {
+    return priceHistories.isEmpty()
+        || priceHistories.get(priceHistories.size() - 1).getPrice() != price;
   }
 }
