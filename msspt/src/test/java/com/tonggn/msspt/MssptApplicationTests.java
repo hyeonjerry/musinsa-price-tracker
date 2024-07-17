@@ -32,6 +32,8 @@ class MssptApplicationTests {
     private int pageSize;
     @Value("${mss.api-url.catalog-by-category-and-page-and-size-url}")
     private String productsUrl;
+    @Value("${mss.api-url.request-delay-millis}")
+    private int delayMillis;
 
     @ParameterizedTest
     @ValueSource(strings = {"A", "002", " "})
@@ -59,26 +61,13 @@ class MssptApplicationTests {
       assertThat(actual).isEqualTo(expected);
     }
 
-    @ParameterizedTest
-    @ValueSource(ints = {0, 99})
-    @DisplayName("상품의 수가 pageSize 미만인 경우 마지막 페이지이다.")
-    void isLastPageTest(final int productCount) {
+    @Test
+    @DisplayName("요청 지연 시간 테스트")
+    void getRequestDelayMillisTest() {
       // given
-      final boolean expected = productCount < this.pageSize;
+      final int expected = this.delayMillis;
       // when
-      final boolean actual = mssApiUrlProperties.isLastPage(productCount);
-      // then
-      assertThat(actual).isEqualTo(expected);
-    }
-
-    @ParameterizedTest
-    @ValueSource(ints = {100, 101, 999})
-    @DisplayName("상품의 수가 pageSize 이상인 경우 마지막 페이지가 아니다.")
-    void isNotLastPageTest(final int productCount) {
-      // given
-      final boolean expected = productCount < this.pageSize;
-      // when
-      final boolean actual = mssApiUrlProperties.isLastPage(productCount);
+      final int actual = mssApiUrlProperties.getRequestDelayMillis();
       // then
       assertThat(actual).isEqualTo(expected);
     }

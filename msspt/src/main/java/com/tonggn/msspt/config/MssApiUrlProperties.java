@@ -1,5 +1,6 @@
 package com.tonggn.msspt.config;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -8,13 +9,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class MssApiUrlProperties {
 
   private final int catalogPageSize;
+  @Getter
+  private final int requestDelayMillis;
   private final String catalogByCategoryAndPageAndSizeUrl;
 
   public String getProductsUrl(final String categoryId, final int page) {
     return String.format(catalogByCategoryAndPageAndSizeUrl, categoryId, page, catalogPageSize);
-  }
-
-  public boolean isLastPage(final int productCount) {
-    return productCount < catalogPageSize;
   }
 }

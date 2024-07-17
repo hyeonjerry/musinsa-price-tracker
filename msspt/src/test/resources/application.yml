@@ -2,7 +2,20 @@ spring:
   datasource:
     url: jdbc:tc:mysql:8.0.38:///
 
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+        type:
+          descriptor:
+            sql:
+              BasicBinder: trace
+        orm:
+          jdbc:
+            bind: trace
 mss:
   api-url:
     catalog-page-size: 100
+    request-delay-millis: 500
     catalog-by-category-and-page-and-size-url: https://test.url?categoryId=%s&page=%s&size=%s
