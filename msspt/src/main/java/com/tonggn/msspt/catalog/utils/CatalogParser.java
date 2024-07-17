@@ -3,8 +3,8 @@ package com.tonggn.msspt.catalog.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,14 +15,11 @@ public class CatalogParser {
   private final ObjectMapper mapper;
 
   public List<CatalogItem> parse(final String json) throws JsonProcessingException {
-    final List<CatalogItem> items = new ArrayList<>();
     final JsonNode tree = mapper.readTree(json);
     final JsonNode goodsList = tree.path("data").path("goodsList");
-    for (final JsonNode goods : goodsList) {
-      final CatalogItem item = mapToItem(goods);
-      items.add(item);
-    }
-    return items;
+    return StreamSupport.stream(goodsList.spliterator(), false)
+        .map(this::mapToItem)
+        .toList();
   }
 
   private CatalogItem mapToItem(final JsonNode item) {

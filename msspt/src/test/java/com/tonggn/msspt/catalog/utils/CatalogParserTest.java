@@ -30,7 +30,9 @@ class CatalogParserTest {
     // given
     final List<CatalogItem> expect = List.of(
         new CatalogItem(1L, "name", "url", 10000, 9000,
-            "brand", "brandName", "brandNameEng")
+            "brand", "brandName", "brandNameEng"),
+        new CatalogItem(2L, "name2", "url2", 20000, 19000,
+            "brand2", "brandName2", "brandNameEng2")
     );
 
     // when
@@ -47,6 +49,16 @@ class CatalogParserTest {
                 "brand": "brand",
                 "brandName": "brandName",
                 "brandNameEng": "brandNameEng"
+              },
+              {
+                "goodsNo": 2,
+                "goodsName": "name2",
+                "imageUrl": "url2",
+                "normalPrice": 20000,
+                "price": 19000,
+                "brand": "brand2",
+                "brandName": "brandName2",
+                "brandNameEng": "brandNameEng2"
               }
             ]
           }
