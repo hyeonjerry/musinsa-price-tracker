@@ -20,6 +20,7 @@ create table product
     goods_no     bigint       not null unique,
     name         varchar(255) not null,
     normal_price int          not null,
+    image_url    varchar(255) not null,
     brand_id     varchar(50)  not null,
     category_id  varchar(10)  not null,
     created_at   datetime(6)  null,

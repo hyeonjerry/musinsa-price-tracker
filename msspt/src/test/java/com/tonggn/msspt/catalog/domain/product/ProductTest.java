@@ -16,7 +16,7 @@ class ProductTest {
     // given
     final BrandId brand = new BrandId("brand");
     final CategoryId category = new CategoryId("category");
-    final Product product = new Product(1L, "name", 2000, brand, category);
+    final Product product = new Product(1L, "name", 2000, "imageUrl", brand, category);
 
     // when
     product.addLastPrice(1000);

@@ -43,6 +43,9 @@ public class Product {
   @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
   private List<PriceHistory> priceHistories = new ArrayList<>();
 
+  @Column(nullable = false)
+  private String imageUrl;
+
   @Embedded
   private BrandId brandId;
 
@@ -57,10 +60,11 @@ public class Product {
   private LocalDateTime updatedAt;
 
   public Product(final Long goodsNo, final String name, final Integer normalPrice,
-      final BrandId brandId, final CategoryId category) {
+      final String imageUrl, final BrandId brandId, final CategoryId category) {
     this.goodsNo = goodsNo;
     this.name = name;
     this.normalPrice = normalPrice;
+    this.imageUrl = imageUrl;
     this.brandId = brandId;
     this.category = category;
   }

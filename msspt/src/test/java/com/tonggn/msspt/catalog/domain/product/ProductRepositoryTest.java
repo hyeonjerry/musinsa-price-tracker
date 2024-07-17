@@ -24,7 +24,7 @@ class ProductRepositoryTest {
     final long goodsNo = 1L;
     final BrandId brandId = new BrandId("brand");
     final CategoryId categoryId = new CategoryId("category");
-    final Product expect = new Product(goodsNo, "name", 2000, brandId, categoryId);
+    final Product expect = new Product(goodsNo, "name", 2000, "imageUrl", brandId, categoryId);
     productRepository.save(expect);
 
     // when
