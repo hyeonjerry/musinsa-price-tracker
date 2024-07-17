@@ -34,6 +34,3 @@ create table price_history
     product_id bigint      not null,
     created_at datetime(6) null
 );
-
-alter table price_history
-    add constraint foreign key (product_id) references product (id);
