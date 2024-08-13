@@ -21,10 +21,10 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @Sql(value = "classpath:clear.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
-class CatalogUpdateServiceTest {
+class ProductUpdateServiceTest {
 
   @Autowired
-  private CatalogUpdateService catalogUpdateService;
+  private ProductUpdateService productUpdateService;
   @Autowired
   private ProductRepository productRepository;
   @Autowired
@@ -50,7 +50,7 @@ class CatalogUpdateServiceTest {
         .toList();
 
     // when
-    catalogUpdateService.saveAndUpdateProducts(requests);
+    productUpdateService.saveOrUpdateProducts(requests);
 
     // then
     final List<Product> actualProducts = productRepository.findAll();
@@ -95,7 +95,7 @@ class CatalogUpdateServiceTest {
     );
 
     // when
-    catalogUpdateService.saveAndUpdateProducts(updateRequests);
+    productUpdateService.saveOrUpdateProducts(updateRequests);
 
     // then
     final List<Product> actualProducts = productRepository.findAll();
@@ -133,7 +133,7 @@ class CatalogUpdateServiceTest {
     productRepository.saveAll(expectProducts);
 
     // when
-    catalogUpdateService.saveAndUpdateProducts(expectRequests);
+    productUpdateService.saveOrUpdateProducts(expectRequests);
 
     // then
     final List<Product> actualProducts = productRepository.findAll();

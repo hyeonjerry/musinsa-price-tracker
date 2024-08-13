@@ -10,14 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
-public class CatalogUpdateService {
+public class ProductUpdateService {
 
   private final ProductRepository productRepository;
 
-  @Transactional
-  public void saveAndUpdateProducts(final List<ProductUpdateRequest> requests) {
+  public void saveOrUpdateProducts(final List<ProductUpdateRequest> requests) {
     final List<Product> products = requests.stream()
         .map(request -> {
           final Product product = findOrCreateNewProduct(request);
