@@ -1,13 +1,10 @@
 package com.tonggn.msspt.catalog.application;
 
-import com.tonggn.msspt.catalog.domain.brand.Brand;
 import com.tonggn.msspt.catalog.domain.brand.BrandId;
-import com.tonggn.msspt.catalog.domain.brand.BrandRepository;
 import com.tonggn.msspt.catalog.domain.category.CategoryId;
 import com.tonggn.msspt.catalog.domain.category.CategoryRepository;
 import com.tonggn.msspt.catalog.domain.product.Product;
 import com.tonggn.msspt.catalog.domain.product.ProductRepository;
-import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CatalogUpdateService {
 
-  private final BrandRepository brandRepository;
   private final ProductRepository productRepository;
   private final CategoryRepository categoryRepository;
 
@@ -27,20 +23,6 @@ public class CatalogUpdateService {
         .stream()
         .map(CategoryResponse::from)
         .toList();
-  }
-
-  @Transactional
-  public void saveOnlyNewBrands(final Collection<BrandSaveRequest> requests) {
-    final List<Brand> newBrands = requests.stream()
-        .map(this::mapToBrand)
-        .filter(brand -> !brandRepository.existsById(brand.getId()))
-        .toList();
-    brandRepository.saveAll(newBrands);
-  }
-
-  private Brand mapToBrand(final BrandSaveRequest request) {
-    final BrandId brandId = new BrandId(request.id());
-    return new Brand(brandId, request.name(), request.englishName());
   }
 
   @Transactional

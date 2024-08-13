@@ -2,7 +2,6 @@ package com.tonggn.msspt.catalog.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.tonggn.msspt.catalog.domain.brand.Brand;
 import com.tonggn.msspt.catalog.domain.brand.BrandId;
 import com.tonggn.msspt.catalog.domain.brand.BrandRepository;
 import com.tonggn.msspt.catalog.domain.category.Category;
@@ -63,55 +62,6 @@ class CatalogUpdateServiceTest {
 
     // then
     assertThat(actual).isEqualTo(expect);
-  }
-
-  @Test
-  @DisplayName("새로운 브랜드를 저장한다.")
-  void saveOnlyNewBrandsWithNewTest() {
-    // given
-    final List<Brand> expect = List.of(
-        new Brand(new BrandId("A"), "브랜드A", "brandA"),
-        new Brand(new BrandId("B"), "브랜드B", "brandB"),
-        new Brand(new BrandId("C"), "브랜드C", "brandC")
-    );
-
-    // when
-    final List<BrandSaveRequest> requests = expect.stream()
-        .map(this::mapToBrand)
-        .toList();
-    catalogUpdateService.saveOnlyNewBrands(requests);
-
-    // then
-    final List<Brand> actual = brandRepository.findAll();
-    assertThat(actual)
-        .usingRecursiveComparison()
-        .ignoringFields("createdAt", "updatedAt")
-        .isEqualTo(expect);
-  }
-
-  @Test
-  @DisplayName("이미 존재하는 브랜드는 저장하지 않는다.")
-  void saveOnlyNewBrandsWithExistsTest() {
-    // given
-    final List<Brand> expect = List.of(
-        new Brand(new BrandId("A"), "브랜드A", "brandA"),
-        new Brand(new BrandId("B"), "브랜드B", "brandB"),
-        new Brand(new BrandId("C"), "브랜드C", "brandC")
-    );
-    brandRepository.saveAll(expect);
-
-    // when
-    final List<BrandSaveRequest> requests = expect.stream()
-        .map(this::mapToBrand)
-        .toList();
-    catalogUpdateService.saveOnlyNewBrands(requests);
-
-    // then
-    final List<Brand> actual = brandRepository.findAll();
-    assertThat(actual)
-        .usingRecursiveComparison()
-        .ignoringFields("createdAt", "updatedAt")
-        .isEqualTo(expect);
   }
 
   @Test
@@ -232,11 +182,6 @@ class CatalogUpdateServiceTest {
         "select product_id, price from price_history where product_id in (:ids)", ids,
         (rs, rowNum) -> rs.getInt("price"));
     assertThat(actualPrices).isEqualTo(expectPrices);
-  }
-
-  private BrandSaveRequest mapToBrand(final Brand brand) {
-    return new BrandSaveRequest(brand.getId().getValue(), brand.getName(),
-        brand.getEnglishName());
   }
 
   private Product mapToProduct(final ProductUpdateRequest request) {
