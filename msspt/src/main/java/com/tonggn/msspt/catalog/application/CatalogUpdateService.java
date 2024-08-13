@@ -2,7 +2,6 @@ package com.tonggn.msspt.catalog.application;
 
 import com.tonggn.msspt.catalog.domain.brand.BrandId;
 import com.tonggn.msspt.catalog.domain.category.CategoryId;
-import com.tonggn.msspt.catalog.domain.category.CategoryRepository;
 import com.tonggn.msspt.catalog.domain.product.Product;
 import com.tonggn.msspt.catalog.domain.product.ProductRepository;
 import java.util.List;
@@ -16,14 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class CatalogUpdateService {
 
   private final ProductRepository productRepository;
-  private final CategoryRepository categoryRepository;
-
-  public List<CategoryResponse> getCategories() {
-    return categoryRepository.findAll()
-        .stream()
-        .map(CategoryResponse::from)
-        .toList();
-  }
 
   @Transactional
   public void saveAndUpdateProducts(final List<ProductUpdateRequest> requests) {

@@ -3,14 +3,10 @@ package com.tonggn.msspt.catalog.application;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.tonggn.msspt.catalog.domain.brand.BrandId;
-import com.tonggn.msspt.catalog.domain.brand.BrandRepository;
-import com.tonggn.msspt.catalog.domain.category.Category;
 import com.tonggn.msspt.catalog.domain.category.CategoryId;
-import com.tonggn.msspt.catalog.domain.category.CategoryRepository;
 import com.tonggn.msspt.catalog.domain.product.Product;
 import com.tonggn.msspt.catalog.domain.product.ProductRepository;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,43 +25,10 @@ class CatalogUpdateServiceTest {
 
   @Autowired
   private CatalogUpdateService catalogUpdateService;
-
-  @Autowired
-  private BrandRepository brandRepository;
   @Autowired
   private ProductRepository productRepository;
   @Autowired
-  private CategoryRepository categoryRepository;
-  @Autowired
   private NamedParameterJdbcTemplate namedJdbc;
-
-  @BeforeEach
-  void setUp() {
-    brandRepository.deleteAll();
-    productRepository.deleteAll();
-    categoryRepository.deleteAll();
-  }
-
-  @Test
-  @DisplayName("상품 목록을 업데이트할 카테고리 목록을 조회한다.")
-  void getCategoriesTest() {
-    // given
-    final List<CategoryResponse> expect = List.of(
-        new CategoryResponse("A", "카테고리A"),
-        new CategoryResponse("B", "카테고리B")
-    );
-
-    categoryRepository.saveAll(List.of(
-        new Category(new CategoryId("A"), "카테고리A"),
-        new Category(new CategoryId("B"), "카테고리B")
-    ));
-
-    // when
-    final List<CategoryResponse> actual = catalogUpdateService.getCategories();
-
-    // then
-    assertThat(actual).isEqualTo(expect);
-  }
 
   @Test
   @DisplayName("상품이 존재하지 않을 경우 상품 정보와 최근 가격을 저장한다.")
