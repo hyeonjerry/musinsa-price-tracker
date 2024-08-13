@@ -18,10 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class MssptApplicationTests {
 
-  @Test
-  void contextLoads() {
-  }
-
   @Nested
   class ConfigurationPropertiesTests {
 

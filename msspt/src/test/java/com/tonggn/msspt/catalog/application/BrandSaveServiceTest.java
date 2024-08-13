@@ -6,26 +6,23 @@ import com.tonggn.msspt.catalog.domain.brand.Brand;
 import com.tonggn.msspt.catalog.domain.brand.BrandId;
 import com.tonggn.msspt.catalog.domain.brand.BrandRepository;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Sql(value = "classpath:clear.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class BrandSaveServiceTest {
 
   @Autowired
   private BrandRepository brandRepository;
   @Autowired
   private BrandSaveService brandSaveService;
-
-  @BeforeEach
-  void setUp() {
-    brandRepository.deleteAll();
-  }
 
   @Test
   @DisplayName("새로운 브랜드를 저장한다.")
