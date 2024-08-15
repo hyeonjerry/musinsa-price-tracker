@@ -34,7 +34,7 @@ public class ProductUpdateService {
   }
 
   private Product findOrCreateNewProduct(final ProductUpdateRequest request) {
-    return productRepository.findByGoodsNo(request.goodsNo())
+    return productRepository.findByGoodsNoWithPriceHistories(request.goodsNo())
         .orElseGet(() -> mapToProduct(request));
   }
 }

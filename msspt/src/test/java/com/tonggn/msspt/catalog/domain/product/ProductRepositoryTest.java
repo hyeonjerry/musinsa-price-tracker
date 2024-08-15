@@ -21,17 +21,19 @@ class ProductRepositoryTest {
   private ProductRepository productRepository;
 
   @Test
-  @DisplayName("goodsNo로 상품을 조회한다.")
-  void findByGoodsNoTest() {
+  @DisplayName("goodsNo로 상품과 가격 이력을 조회한다.")
+  void findByGoodsNoWithPriceHistoriesTest() {
     // given
     final long goodsNo = 1L;
     final BrandId brandId = new BrandId("brand");
     final CategoryId categoryId = new CategoryId("category");
     final Product expect = new Product(goodsNo, "name", 2000, "imageUrl", brandId, categoryId);
+    expect.addLastPriceIfNew(2000);
+    expect.addLastPriceIfNew(3000);
     productRepository.save(expect);
 
     // when
-    final Product actual = productRepository.findByGoodsNo(goodsNo).get();
+    final Product actual = productRepository.findByGoodsNoWithPriceHistories(goodsNo).get();
 
     // then
     assertThat(actual).usingRecursiveAssertion()
