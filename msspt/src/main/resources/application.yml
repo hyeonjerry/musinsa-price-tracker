@@ -15,4 +15,3 @@ mss:
   api-url:
     catalog-page-size: 100
     catalog-by-category-and-page-and-size-url: ${CATALOG-BY-CATEGORY-AND-PAGE-AND-SIZE-URL}
-    request-delay-millis: 500
