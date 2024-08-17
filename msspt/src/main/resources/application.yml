@@ -15,3 +15,6 @@ mss:
   api-url:
     catalog-page-size: 100
     catalog-by-category-and-page-and-size-url: ${CATALOG-BY-CATEGORY-AND-PAGE-AND-SIZE-URL}
+  proxy-list-url: ${PROXY-LIST-URL}
+  proxy-host: ${PROXY-HOST}
+  proxy-port: ${PROXY-PORT}
