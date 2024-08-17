@@ -1,6 +1,6 @@
 package com.tonggn.msspt.catalog.domain.product;
 
-import java.util.Optional;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -10,8 +10,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             SELECT p
             FROM Product p
             INNER JOIN FETCH p.priceHistories ph
-            WHERE p.goodsNo = :goodsNo
+            WHERE p.goodsNo IN :goodsNos
             ORDER BY ph.createdAt ASC
       """)
-  Optional<Product> findByGoodsNoWithPriceHistories(long goodsNo);
+  List<Product> findByGoodsNoInWithPriceHistories(List<Long> goodsNos);
 }
