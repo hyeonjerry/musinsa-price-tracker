@@ -2,6 +2,7 @@ package com.tonggn.msspt.catalog.application;
 
 import com.tonggn.msspt.catalog.domain.brand.Brand;
 import com.tonggn.msspt.catalog.domain.brand.BrandId;
+import com.tonggn.msspt.catalog.domain.brand.BrandJdbcBatchRepository;
 import com.tonggn.msspt.catalog.domain.brand.BrandRepository;
 import java.util.Collection;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class BrandSaveService {
 
   private final BrandRepository brandRepository;
+  private final BrandJdbcBatchRepository brandBatchRepository;
 
   public void saveOnlyNewBrands(final Collection<BrandSaveRequest> requests) {
     final List<Brand> brands = requests.stream()
@@ -23,7 +25,7 @@ public class BrandSaveService {
 
     final List<Brand> newBrands = filterNewBrands(brands);
 
-    brandRepository.saveAll(newBrands);
+    brandBatchRepository.saveAll(newBrands);
   }
 
   private List<Brand> filterNewBrands(final List<Brand> brands) {
