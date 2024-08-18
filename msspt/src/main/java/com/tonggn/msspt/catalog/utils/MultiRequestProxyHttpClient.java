@@ -12,7 +12,7 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
-public class MultiRequestProxyHttpClient {
+public class MultiRequestProxyHttpClient implements HttpClient {
 
   private static final int N_THREADS = 10;
   private static final int TIMEOUT_MILLIS = 5000;
@@ -27,7 +27,8 @@ public class MultiRequestProxyHttpClient {
     this.executor = Executors.newFixedThreadPool(N_THREADS);
   }
 
-  public String request(final String url) {
+  @Override
+  public String get(final String url) {
     final List<Proxy> proxies = getNextProxies(N_THREADS);
     final List<Callable<String>> callables = proxies.stream()
         .map(proxy -> (Callable<String>) () -> request(proxy, url))
@@ -36,7 +37,7 @@ public class MultiRequestProxyHttpClient {
       return executor.invokeAny(callables);
     } catch (final InterruptedException | ExecutionException e) {
       log.error(e.getMessage());
-      return request(url);
+      return get(url);
     }
   }
 

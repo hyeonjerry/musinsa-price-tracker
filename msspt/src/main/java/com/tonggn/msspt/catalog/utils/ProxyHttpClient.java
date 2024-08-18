@@ -4,9 +4,10 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Proxy.Type;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-public class ProxyHttpClient {
+public class ProxyHttpClient implements HttpClient {
 
   private static final int TIMEOUT_MILLIS = 5000;
   private final RestTemplate restTemplate;
@@ -20,7 +21,8 @@ public class ProxyHttpClient {
     this.restTemplate = new RestTemplate(requestFactory);
   }
 
-  public String get(final String url) {
+  @Override
+  public String get(final String url) throws RestClientException {
     return restTemplate.getForObject(url, String.class);
   }
 }

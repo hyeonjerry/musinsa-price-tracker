@@ -9,6 +9,7 @@ import com.tonggn.msspt.catalog.application.ProductUpdateRequest;
 import com.tonggn.msspt.catalog.application.ProductUpdateService;
 import com.tonggn.msspt.catalog.utils.CatalogItem;
 import com.tonggn.msspt.catalog.utils.CatalogParser;
+import com.tonggn.msspt.catalog.utils.HttpClient;
 import com.tonggn.msspt.catalog.utils.ProxyHttpClient;
 import com.tonggn.msspt.config.MssApiUrlProperties;
 import java.util.List;
@@ -47,7 +48,7 @@ public class CatalogUpdateScheduler {
 
   private void updateCatalogByCategory(final CategoryResponse category) {
     int page = 1;
-    final ProxyHttpClient httpClient = new ProxyHttpClient(proxyHost, proxyPort);
+    final HttpClient httpClient = new ProxyHttpClient(proxyHost, proxyPort);
     while (true) {
       final String url = mssApiUrlProperties.getProductsUrl(category.id(), page);
       final List<CatalogItem> items = fetchItemsByUrl(url, httpClient);
@@ -59,7 +60,7 @@ public class CatalogUpdateScheduler {
     }
   }
 
-  private List<CatalogItem> fetchItemsByUrl(final String url, final ProxyHttpClient httpClient) {
+  private List<CatalogItem> fetchItemsByUrl(final String url, final HttpClient httpClient) {
     log.info("Fetching products from {}", url);
     try {
       final String response = httpClient.get(url);

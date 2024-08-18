@@ -8,26 +8,31 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-public class HttpProxyFetcher {
+public class HttpProxyFetcher implements ProxyFetcher {
 
-  private HttpProxyFetcher() {
+  private final String proxyListUrl;
+  private final RestTemplate restTemplate;
+
+  public HttpProxyFetcher(final String proxyListUrl) {
+    this.proxyListUrl = proxyListUrl;
+    this.restTemplate = new RestTemplate();
   }
 
-  public static List<Proxy> fetch(final String proxyListUrl) {
-    final var rows = requestProxyList(proxyListUrl);
+  @Override
+  public List<Proxy> fetch() {
+    final List<String> rows = requestProxyList();
     return rows.stream()
-        .map(HttpProxyFetcher::mapToProxy)
+        .map(this::mapToProxy)
         .toList();
   }
 
-  private static List<String> requestProxyList(final String proxyListUrl) {
-    final RestTemplate restTemplate = new RestTemplate();
+  private List<String> requestProxyList() {
     final ResponseEntity<String> response = restTemplate.getForEntity(proxyListUrl, String.class);
     return Arrays.stream(response.getBody().split("\n"))
         .toList();
   }
 
-  private static Proxy mapToProxy(final String row) {
+  private Proxy mapToProxy(final String row) {
     final var parts = row.split(":");
     final var host = parts[0];
     final var port = Integer.parseInt(parts[1]);
