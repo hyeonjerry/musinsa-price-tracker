@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 
 @Slf4j
 @Component
@@ -63,8 +64,11 @@ public class CatalogUpdateScheduler {
     try {
       final String response = httpClient.get(url);
       return catalogParser.parse(response);
+    } catch (final RestClientException e) {
+      log.error("Failed to fetch products: {}", e.getMessage());
+      return fetchItemsByUrl(url, httpClient);
     } catch (final JsonProcessingException e) {
-      log.error("Failed to parse products", e);
+      log.error("Failed to parse products: {}", e.getMessage());
     }
     return List.of();
   }
