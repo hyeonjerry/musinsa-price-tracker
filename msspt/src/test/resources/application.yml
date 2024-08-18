@@ -5,6 +5,11 @@ spring:
 logging:
   level:
     org:
+      springframework:
+        jdbc:
+          core:
+            JdbcTemplate: debug
+            StatementCreatorUtils: trace
       hibernate:
         SQL: debug
         type:
@@ -14,8 +19,11 @@ logging:
         orm:
           jdbc:
             bind: trace
+
 mss:
   api-url:
     catalog-page-size: 100
     request-delay-millis: 500
     catalog-by-category-and-page-and-size-url: https://test.url?categoryId=%s&page=%s&size=%s
+  proxy-host: proxy.host
+  proxy-port: 1234
