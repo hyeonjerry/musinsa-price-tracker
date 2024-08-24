@@ -17,9 +17,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClientException;
 
 @Slf4j
 @Component
@@ -31,18 +31,23 @@ public class CatalogUpdateScheduler {
   private final CategoryQueryService categoryQueryService;
   private final BrandSaveService brandSaveService;
   private final ProductUpdateService productUpdateService;
-  // private final ProxyHttpClient httpClient;
-  private final RotatingProxyMultiRequestHttpClient httpClient;
+
+  @Value("${mss.proxy-list-url}")
+  private String proxyListUrl;
 
   @Scheduled(cron = "0 0 0/6 * * *") // 초 분 시 일 월 요일
   public void update() {
+    final HttpClient httpClient = new RotatingProxyMultiRequestHttpClient(proxyListUrl);
     final List<CategoryResponse> categories = categoryQueryService.getCategories();
     for (final CategoryResponse category : categories) {
-      updateCatalogByCategory(category);
+      updateCatalogByCategory(category, httpClient);
     }
   }
 
-  private void updateCatalogByCategory(final CategoryResponse category) {
+  private void updateCatalogByCategory(
+      final CategoryResponse category,
+      final HttpClient httpClient
+  ) {
     int page = 1;
     while (true) {
       final String url = mssApiUrlProperties.getProductsUrl(category.id(), page);
@@ -60,9 +65,6 @@ public class CatalogUpdateScheduler {
     try {
       final String response = httpClient.get(url);
       return catalogParser.parse(response);
-    } catch (final RestClientException e) {
-      log.error("Failed to fetch products: {}", e.getMessage());
-      return fetchItemsByUrl(url, httpClient);
     } catch (final JsonProcessingException e) {
       log.error("Failed to parse products: {}", e.getMessage());
     }

@@ -9,13 +9,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
-@Component
 public class RotatingProxyMultiRequestHttpClient implements HttpClient {
 
   private static final int N_THREADS = 30;
@@ -25,11 +22,9 @@ public class RotatingProxyMultiRequestHttpClient implements HttpClient {
   private final ExecutorService executor;
   private final String proxyListUrl;
 
-  public RotatingProxyMultiRequestHttpClient(
-      @Value("${mss.proxy-list-url}") final String proxyListUrl
-  ) {
+  public RotatingProxyMultiRequestHttpClient(final String proxyListUrl) {
     this.executor = Executors.newFixedThreadPool(N_THREADS);
-    this.proxyManager = new ProxyManager(N_THREADS, 1);
+    this.proxyManager = new ProxyManager(N_THREADS, 5);
     this.proxyListUrl = proxyListUrl;
   }
 
