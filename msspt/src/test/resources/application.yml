@@ -27,3 +27,4 @@ mss:
     catalog-by-category-and-page-and-size-url: https://test.url?categoryId=%s&page=%s&size=%s
   proxy-host: proxy.host
   proxy-port: 1234
+  proxy-list-url: https://example.com

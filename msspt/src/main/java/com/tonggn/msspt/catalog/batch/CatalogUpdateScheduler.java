@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
@@ -32,11 +31,7 @@ public class CatalogUpdateScheduler {
   private final CategoryQueryService categoryQueryService;
   private final BrandSaveService brandSaveService;
   private final ProductUpdateService productUpdateService;
-
-  @Value("${mss.proxy-host}")
-  private String proxyHost;
-  @Value("${mss.proxy-port}")
-  private int proxyPort;
+  private final ProxyHttpClient httpClient;
 
   @Scheduled(cron = "0 0 0/6 * * *") // 초 분 시 일 월 요일
   public void update() {
@@ -48,7 +43,6 @@ public class CatalogUpdateScheduler {
 
   private void updateCatalogByCategory(final CategoryResponse category) {
     int page = 1;
-    final HttpClient httpClient = new ProxyHttpClient(proxyHost, proxyPort);
     while (true) {
       final String url = mssApiUrlProperties.getProductsUrl(category.id(), page);
       final List<CatalogItem> items = fetchItemsByUrl(url, httpClient);
