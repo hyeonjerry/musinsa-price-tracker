@@ -10,7 +10,7 @@ import com.tonggn.msspt.catalog.application.ProductUpdateService;
 import com.tonggn.msspt.catalog.utils.CatalogItem;
 import com.tonggn.msspt.catalog.utils.CatalogParser;
 import com.tonggn.msspt.catalog.utils.HttpClient;
-import com.tonggn.msspt.catalog.utils.ProxyHttpClient;
+import com.tonggn.msspt.catalog.utils.RotatingProxyMultiRequestHttpClient;
 import com.tonggn.msspt.config.MssApiUrlProperties;
 import java.util.List;
 import java.util.Set;
@@ -31,7 +31,8 @@ public class CatalogUpdateScheduler {
   private final CategoryQueryService categoryQueryService;
   private final BrandSaveService brandSaveService;
   private final ProductUpdateService productUpdateService;
-  private final ProxyHttpClient httpClient;
+  // private final ProxyHttpClient httpClient;
+  private final RotatingProxyMultiRequestHttpClient httpClient;
 
   @Scheduled(cron = "0 0 0/6 * * *") // 초 분 시 일 월 요일
   public void update() {
