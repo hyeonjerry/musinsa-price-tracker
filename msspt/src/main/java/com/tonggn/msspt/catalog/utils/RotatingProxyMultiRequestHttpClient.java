@@ -1,8 +1,6 @@
 package com.tonggn.msspt.catalog.utils;
 
-import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -20,25 +18,24 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class RotatingProxyMultiRequestHttpClient implements HttpClient {
 
-  private static final int N_THREADS = 20;
+  private static final int N_THREADS = 30;
   private static final int TIMEOUT = 15_000;
 
+  private final ProxyManager proxyManager;
   private final ExecutorService executor;
   private final String proxyListUrl;
-
-  private List<Proxy> proxies = List.of();
-  private int index = 0;
 
   public RotatingProxyMultiRequestHttpClient(
       @Value("${mss.proxy-list-url}") final String proxyListUrl
   ) {
     this.executor = Executors.newFixedThreadPool(N_THREADS);
+    this.proxyManager = new ProxyManager(N_THREADS, 1);
     this.proxyListUrl = proxyListUrl;
   }
 
   @Override
   public String get(final String url) {
-    final List<Proxy> proxies = extractSampleProxies();
+    final List<Proxy> proxies = proxyManager.sampleRecurrentProxies();
     final List<Callable<String>> jobs = proxies.stream()
         .map(proxy -> (Callable<String>) () -> request(url, proxy))
         .toList();
@@ -57,18 +54,9 @@ public class RotatingProxyMultiRequestHttpClient implements HttpClient {
           log.error("Timeout exception occurred {}", e.getMessage());
           break;
       }
+      proxyManager.dropSampledProxies();
       return get(url);
     }
-  }
-
-  private List<Proxy> extractSampleProxies() {
-    if (index + N_THREADS >= proxies.size()) {
-      updateProxies(proxyListUrl);
-      index = 0;
-    }
-    final int offset = N_THREADS / 2;
-    index += offset;
-    return proxies.subList(index - offset, index + offset);
   }
 
   private String request(final String url, final Proxy proxy) {
@@ -80,18 +68,35 @@ public class RotatingProxyMultiRequestHttpClient implements HttpClient {
     return restTemplate.getForObject(url, String.class);
   }
 
-  private void updateProxies(final String proxyListUrl) {
-    final RestTemplate restTemplate = new RestTemplate();
-    final String[] addresses = restTemplate.getForObject(proxyListUrl, String.class).split("\n");
-    this.proxies = Arrays.stream(addresses)
-        .map(this::mapToProxy)
-        .toList();
-  }
+  private class ProxyManager {
 
-  private Proxy mapToProxy(final String address) {
-    final String[] parts = address.split(":");
-    final String host = parts[0];
-    final int port = Integer.parseInt(parts[1]);
-    return new Proxy(Proxy.Type.HTTP, new InetSocketAddress(host, port));
+    private final int sampleSize;
+    private final int offset;
+
+    private List<Proxy> proxies;
+    private int index;
+
+    public ProxyManager(final int sampleSize, final int offset) {
+      this.sampleSize = sampleSize;
+      this.offset = offset;
+      this.proxies = List.of();
+      this.index = 0;
+    }
+
+    public List<Proxy> sampleRecurrentProxies() {
+      if (index + sampleSize >= proxies.size()) {
+        this.proxies = HttpProxyFetcher.fetchProxies(proxyListUrl);
+        index = 0;
+      }
+      final int start = index;
+      final int end = index + sampleSize;
+      index += offset;
+      return proxies.subList(start, end);
+    }
+
+    public void dropSampledProxies() {
+      index -= offset;
+      index += sampleSize;
+    }
   }
 }
