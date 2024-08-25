@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
 
 public class ProxyHttpClient implements HttpClient {
 
-  private static final int TIMEOUT_MILLIS = 5000;
+  private static final int TIMEOUT_MILLIS = 10_000;
   private final RestTemplate restTemplate;
 
   public ProxyHttpClient(final String proxyHost, final int proxyPort) {

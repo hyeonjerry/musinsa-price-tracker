@@ -10,7 +10,7 @@ import com.tonggn.msspt.catalog.application.ProductUpdateService;
 import com.tonggn.msspt.catalog.utils.CatalogItem;
 import com.tonggn.msspt.catalog.utils.CatalogParser;
 import com.tonggn.msspt.catalog.utils.HttpClient;
-import com.tonggn.msspt.catalog.utils.RotatingProxyMultiRequestHttpClient;
+import com.tonggn.msspt.catalog.utils.ProxyHttpClient;
 import com.tonggn.msspt.config.MssApiUrlProperties;
 import java.util.List;
 import java.util.Set;
@@ -34,10 +34,14 @@ public class CatalogUpdateScheduler {
 
   @Value("${mss.proxy-list-url}")
   private String proxyListUrl;
+  @Value("${mss.proxy-host}")
+  private String proxyHost;
+  @Value("${mss.proxy-port}")
+  private int proxyPort;
 
-  @Scheduled(cron = "0 0 0/6 * * *") // 초 분 시 일 월 요일
+  @Scheduled(cron = "0 0 2 * * *") // 초 분 시 일 월 요일
   public void update() {
-    final HttpClient httpClient = new RotatingProxyMultiRequestHttpClient(proxyListUrl);
+    final HttpClient httpClient = new ProxyHttpClient(proxyHost, proxyPort);
     final List<CategoryResponse> categories = categoryQueryService.getCategories();
     for (final CategoryResponse category : categories) {
       updateCatalogByCategory(category, httpClient);
