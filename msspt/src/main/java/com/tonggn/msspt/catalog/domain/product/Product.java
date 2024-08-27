@@ -71,15 +71,7 @@ public class Product {
     this.category = category;
   }
 
-  public void addLastPriceIfNew(final int price) {
-    if (isNewPrice(price)) {
-      final PriceHistory priceHistory = new PriceHistory(this, price);
-      priceHistories.add(priceHistory);
-    }
-  }
-
-  private boolean isNewPrice(final int price) {
-    return priceHistories.isEmpty()
-        || priceHistories.get(priceHistories.size() - 1).getPrice() != price;
+  public void addLastPrice(final int price) {
+    priceHistories.add(new PriceHistory(this, price));
   }
 }

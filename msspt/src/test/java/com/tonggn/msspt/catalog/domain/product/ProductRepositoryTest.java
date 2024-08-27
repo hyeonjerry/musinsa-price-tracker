@@ -30,14 +30,14 @@ class ProductRepositoryTest {
         new Product(2L, "name", 2000, "imageUrl", new BrandId("brand"), new CategoryId("category")),
         new Product(3L, "name", 2000, "imageUrl", new BrandId("brand"), new CategoryId("category"))
     );
-    expect.forEach(product -> product.addLastPriceIfNew(1000));
+    expect.forEach(product -> product.addLastPrice(1000));
     productRepository.saveAll(expect);
 
     // when
     final List<Long> goodsNos = expect.stream()
         .map(Product::getGoodsNo)
         .toList();
-    final List<Product> actual = productRepository.findByGoodsNoInWithPriceHistories(goodsNos);
+    final List<Product> actual = productRepository.findByGoodsNoIn(goodsNos);
 
     // then
     assertThat(actual).usingRecursiveAssertion()

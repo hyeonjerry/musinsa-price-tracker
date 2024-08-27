@@ -44,7 +44,7 @@ class ProductUpdateServiceTest {
     final List<Product> expects = requests.stream()
         .map(request -> {
           final Product product = mapToProduct(request);
-          product.addLastPriceIfNew(request.price());
+          product.addLastPrice(request.price());
           return product;
         })
         .toList();
@@ -58,89 +58,6 @@ class ProductUpdateServiceTest {
         .usingRecursiveComparison()
         .ignoringFields("id", "priceHistories", "createdAt", "updatedAt")
         .isEqualTo(expects);
-
-    final MapSqlParameterSource ids = new MapSqlParameterSource("ids",
-        actualProducts.stream().map(Product::getId).toList());
-    final List<Integer> actualPrices = namedJdbc.query(
-        "select product_id, price from price_history where product_id in (:ids)", ids,
-        (rs, rowNum) -> rs.getInt("price"));
-    assertThat(actualPrices).isEqualTo(expectPrices);
-  }
-
-  @Test
-  @DisplayName("상품이 존재하고 마지막 가격과 최근 가격이 다를 경우 최근 가격을 추가한다.")
-  void saveAndUpdateWithExistsProductsTest() {
-    // given
-    final List<Integer> expectPrices = List.of(2000, 2000, 1000, 1500);
-    final List<ProductUpdateRequest> expectRequests = List.of(
-        new ProductUpdateRequest(1L, "name", 2000, expectPrices.get(0), "imageUrl", "brand",
-            "category"),
-        new ProductUpdateRequest(2L, "name", 2000, expectPrices.get(1), "imageUrl", "brand",
-            "category")
-    );
-    final List<Product> expectProducts = expectRequests.stream()
-        .map(request -> {
-          final Product product = mapToProduct(request);
-          product.addLastPriceIfNew(request.price());
-          return product;
-        })
-        .toList();
-    productRepository.saveAll(expectProducts);
-
-    final List<ProductUpdateRequest> updateRequests = List.of(
-        new ProductUpdateRequest(1L, "name", 2000, expectPrices.get(2), "imageUrl", "brand",
-            "category"),
-        new ProductUpdateRequest(2L, "name", 2000, expectPrices.get(3), "imageUrl", "brand",
-            "category")
-    );
-
-    // when
-    productUpdateService.saveOrUpdateProducts(updateRequests);
-
-    // then
-    final List<Product> actualProducts = productRepository.findAll();
-    assertThat(actualProducts)
-        .usingRecursiveComparison()
-        .ignoringFields("id", "priceHistories", "createdAt", "updatedAt")
-        .isEqualTo(expectProducts);
-
-    final MapSqlParameterSource ids = new MapSqlParameterSource("ids",
-        actualProducts.stream().map(Product::getId).toList());
-    final List<Integer> actualPrices = namedJdbc.query(
-        "select product_id, price from price_history where product_id in (:ids)", ids,
-        (rs, rowNum) -> rs.getInt("price"));
-    assertThat(actualPrices).isEqualTo(expectPrices);
-  }
-
-  @Test
-  @DisplayName("상품이 존재하고 마지막 가격과 최근 가격이 같을 경우 최근 가격을 추가하지 않는다.")
-  void saveAndUpdateWithExistsAndSamePriceProductsTest() {
-    // given
-    final List<Integer> expectPrices = List.of(2000, 2000);
-    final List<ProductUpdateRequest> expectRequests = List.of(
-        new ProductUpdateRequest(1L, "name", 2000, expectPrices.get(0), "imageUrl", "brand",
-            "category"),
-        new ProductUpdateRequest(2L, "name", 2000, expectPrices.get(1), "imageUrl", "brand",
-            "category")
-    );
-    final List<Product> expectProducts = expectRequests.stream()
-        .map(request -> {
-          final Product product = mapToProduct(request);
-          product.addLastPriceIfNew(request.price());
-          return product;
-        })
-        .toList();
-    productRepository.saveAll(expectProducts);
-
-    // when
-    productUpdateService.saveOrUpdateProducts(expectRequests);
-
-    // then
-    final List<Product> actualProducts = productRepository.findAll();
-    assertThat(actualProducts)
-        .usingRecursiveComparison()
-        .ignoringFields("id", "priceHistories", "createdAt", "updatedAt")
-        .isEqualTo(expectProducts);
 
     final MapSqlParameterSource ids = new MapSqlParameterSource("ids",
         actualProducts.stream().map(Product::getId).toList());

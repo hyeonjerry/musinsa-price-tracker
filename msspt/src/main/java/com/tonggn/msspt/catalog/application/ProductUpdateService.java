@@ -24,7 +24,7 @@ public class ProductUpdateService {
         .toList();
 
     final Map<Long, Product> existingProducts = productRepository
-        .findByGoodsNoInWithPriceHistories(goodsNos).stream()
+        .findByGoodsNoIn(goodsNos).stream()
         .collect(Collectors.toMap(Product::getGoodsNo, product -> product));
 
     final List<Product> products = requests.stream()
@@ -39,7 +39,7 @@ public class ProductUpdateService {
       final Map<Long, Product> existingProducts
   ) {
     final Product product = existingProducts.getOrDefault(request.goodsNo(), mapToProduct(request));
-    product.addLastPriceIfNew(request.price());
+    product.addLastPrice(request.price());
     return product;
   }
 
