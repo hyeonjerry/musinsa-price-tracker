@@ -12,9 +12,8 @@ spring:
     enabled: true
 
 mss:
-  api-url:
-    catalog-page-size: 100
-    catalog-by-category-and-page-and-size-url: ${CATALOG-BY-CATEGORY-AND-PAGE-AND-SIZE-URL}
-  proxy-list-url: ${PROXY-LIST-URL}
-  proxy-host: ${PROXY-HOST}
-  proxy-port: ${PROXY-PORT}
+  api-url: ${API_URL}
+  proxy:
+    free-list-url: ${PROXY_FREE_LIST_URL}
+    paid-host: ${PROXY_PAID_HOST}
+    paid-port: ${PROXY_PAID_PORT}

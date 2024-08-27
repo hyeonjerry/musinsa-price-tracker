@@ -11,7 +11,6 @@ import com.tonggn.msspt.catalog.utils.CatalogItem;
 import com.tonggn.msspt.catalog.utils.CatalogParser;
 import com.tonggn.msspt.catalog.utils.HttpClient;
 import com.tonggn.msspt.catalog.utils.ProxyHttpClient;
-import com.tonggn.msspt.config.MssApiUrlProperties;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,16 +26,17 @@ import org.springframework.stereotype.Component;
 public class CatalogUpdateScheduler {
 
   private final CatalogParser catalogParser;
-  private final MssApiUrlProperties mssApiUrlProperties;
   private final CategoryQueryService categoryQueryService;
   private final BrandSaveService brandSaveService;
   private final ProductUpdateService productUpdateService;
 
-  @Value("${mss.proxy-list-url}")
-  private String proxyListUrl;
-  @Value("${mss.proxy-host}")
+  @Value("${mss.api-url}")
+  private String apiUrl;
+  // @Value("${mss.proxy.free-list-url}")
+  // private String proxyListUrl;
+  @Value("${mss.proxy.paid-host}")
   private String proxyHost;
-  @Value("${mss.proxy-port}")
+  @Value("${mss.proxy.paid-port}")
   private int proxyPort;
 
   @Scheduled(cron = "0 0 2 * * *") // 초 분 시 일 월 요일
@@ -54,7 +54,7 @@ public class CatalogUpdateScheduler {
   ) {
     int page = 1;
     while (true) {
-      final String url = mssApiUrlProperties.getProductsUrl(category.id(), page);
+      final String url = getApiUrl(category.id(), page);
       final List<CatalogItem> items = fetchItemsByUrl(url, httpClient);
       saveItems(items, category);
       if (items.isEmpty()) {
@@ -62,6 +62,10 @@ public class CatalogUpdateScheduler {
       }
       page++;
     }
+  }
+
+  private String getApiUrl(final String categoryId, final int page) {
+    return String.format(apiUrl, categoryId, page);
   }
 
   private List<CatalogItem> fetchItemsByUrl(final String url, final HttpClient httpClient) {

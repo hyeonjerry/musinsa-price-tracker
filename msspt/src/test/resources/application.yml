@@ -21,10 +21,8 @@ logging:
             bind: trace
 
 mss:
-  api-url:
-    catalog-page-size: 100
-    request-delay-millis: 500
-    catalog-by-category-and-page-and-size-url: https://test.url?categoryId=%s&page=%s&size=%s
-  proxy-host: proxy.host
-  proxy-port: 1234
-  proxy-list-url: https://example.com
+  api-url: https://api.url?category=%s&page=%s
+  proxy:
+    free-list-url: https://proxy.list.url
+    paid-host: https://paid.proxy.host
+    paid-port: 1234
