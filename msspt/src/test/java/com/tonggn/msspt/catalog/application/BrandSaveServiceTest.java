@@ -29,9 +29,9 @@ class BrandSaveServiceTest {
   void saveOnlyNewBrandsWithNewTest() {
     // given
     final List<Brand> expect = List.of(
-        new Brand(new BrandId("A"), "브랜드A", "brandA"),
-        new Brand(new BrandId("B"), "브랜드B", "brandB"),
-        new Brand(new BrandId("C"), "브랜드C", "brandC")
+        new Brand(new BrandId("A"), "브랜드A"),
+        new Brand(new BrandId("B"), "브랜드B"),
+        new Brand(new BrandId("C"), "브랜드C")
     );
 
     // when
@@ -53,9 +53,9 @@ class BrandSaveServiceTest {
   void saveOnlyNewBrandsWithExistsTest() {
     // given
     final List<Brand> expect = List.of(
-        new Brand(new BrandId("A"), "브랜드A", "brandA"),
-        new Brand(new BrandId("B"), "브랜드B", "brandB"),
-        new Brand(new BrandId("C"), "브랜드C", "brandC")
+        new Brand(new BrandId("A"), "브랜드A"),
+        new Brand(new BrandId("B"), "브랜드B"),
+        new Brand(new BrandId("C"), "브랜드C")
     );
     brandRepository.saveAll(expect);
 
@@ -74,7 +74,6 @@ class BrandSaveServiceTest {
   }
 
   private BrandSaveRequest mapToBrand(final Brand brand) {
-    return new BrandSaveRequest(brand.getId().getValue(), brand.getName(),
-        brand.getEnglishName());
+    return new BrandSaveRequest(brand.getId().getValue(), brand.getName());
   }
 }

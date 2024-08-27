@@ -26,9 +26,6 @@ public class Brand {
   @Column(nullable = false)
   private String name;
 
-  @Column(nullable = false)
-  private String englishName;
-
   @CreatedDate
   @Column(updatable = false)
   private LocalDateTime createdAt;
@@ -36,10 +33,9 @@ public class Brand {
   @LastModifiedDate
   private LocalDateTime updatedAt;
 
-  public Brand(final BrandId id, final String name, final String englishName) {
+  public Brand(final BrandId id, final String name) {
     this.id = id;
     this.name = name;
-    this.englishName = englishName;
   }
 }
 

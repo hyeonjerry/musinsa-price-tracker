@@ -16,7 +16,7 @@ public class CatalogParser {
 
   public List<CatalogItem> parse(final String json) throws JsonProcessingException {
     final JsonNode tree = mapper.readTree(json);
-    final JsonNode goodsList = tree.path("data").path("goodsList");
+    final JsonNode goodsList = tree.path("data").path("list");
     return StreamSupport.stream(goodsList.spliterator(), false)
         .map(this::mapToItem)
         .toList();
@@ -26,12 +26,11 @@ public class CatalogParser {
     return new CatalogItem(
         item.path("goodsNo").asLong(),
         item.path("goodsName").asText(),
-        item.path("imageUrl").asText(),
+        item.path("thumbnail").asText(),
         item.path("normalPrice").asInt(),
         item.path("price").asInt(),
         item.path("brand").asText(),
-        item.path("brandName").asText(),
-        item.path("brandNameEng").asText()
+        item.path("brandName").asText()
     );
   }
 }

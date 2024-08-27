@@ -29,39 +29,35 @@ class CatalogParserTest {
   void parseTest() throws JsonProcessingException {
     // given
     final List<CatalogItem> expect = List.of(
-        new CatalogItem(1L, "name", "url", 10000, 9000,
-            "brand", "brandName", "brandNameEng"),
-        new CatalogItem(2L, "name2", "url2", 20000, 19000,
-            "brand2", "brandName2", "brandNameEng2")
+        new CatalogItem(1L, "name1", "url1", 10_000, 9_000, "brand1", "brandName1"),
+        new CatalogItem(2L, "name2", "url2", 20_000, 19_000, "brand2", "brandName2")
     );
 
     // when
     final List<CatalogItem> actual = parser.parse("""
         {
-          "data": {
-            "goodsList": [
-              {
-                "goodsNo": 1,
-                "goodsName": "name",
-                "imageUrl": "url",
-                "normalPrice": 10000,
-                "price": 9000,
-                "brand": "brand",
-                "brandName": "brandName",
-                "brandNameEng": "brandNameEng"
-              },
-              {
-                "goodsNo": 2,
-                "goodsName": "name2",
-                "imageUrl": "url2",
-                "normalPrice": 20000,
-                "price": 19000,
-                "brand": "brand2",
-                "brandName": "brandName2",
-                "brandNameEng": "brandNameEng2"
-              }
-            ]
-          }
+           "data": {
+             "list": [
+               {
+                 "goodsNo": 1,
+                 "goodsName": "name1",
+                 "thumbnail": "url1",
+                 "normalPrice": 10000,
+                 "price": 9000,
+                 "brand": "brand1",
+                 "brandName": "brandName1"
+               },
+                {
+                  "goodsNo": 2,
+                  "goodsName": "name2",
+                  "thumbnail": "url2",
+                  "normalPrice": 20000,
+                  "price": 19000,
+                  "brand": "brand2",
+                  "brandName": "brandName2"
+                }
+             ]
+           }
         }
         """);
 

@@ -7,8 +7,7 @@ public record CatalogItem(
     int normalPrice,
     int price,
     String brand,
-    String brandName,
-    String brandNameEng
+    String brandName
 ) {
 
 }

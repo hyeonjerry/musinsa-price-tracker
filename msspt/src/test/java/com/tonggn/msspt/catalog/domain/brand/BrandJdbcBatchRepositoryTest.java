@@ -27,9 +27,9 @@ class BrandJdbcBatchRepositoryTest {
   void saveAllTest() {
     // given
     final List<Brand> expects = List.of(
-        new Brand(new BrandId("brand1"), "name1", "englishName1"),
-        new Brand(new BrandId("brand2"), "name2", "englishName2"),
-        new Brand(new BrandId("brand3"), "name3", "englishName3")
+        new Brand(new BrandId("brand1"), "name1"),
+        new Brand(new BrandId("brand2"), "name2"),
+        new Brand(new BrandId("brand3"), "name3")
     );
 
     // when

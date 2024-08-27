@@ -23,9 +23,9 @@ class BrandRepositoryTest {
   @DisplayName("BrandId 리스트로 저장된 브랜드 목록을 조회한다.")
   void findAllByIdInTest() {
     // given
-    final Brand brand1 = new Brand(new BrandId("brand1"), "name1", "englishName1");
-    final Brand brand2 = new Brand(new BrandId("brand2"), "name2", "englishName2");
-    final Brand brand3 = new Brand(new BrandId("brand3"), "name3", "englishName3");
+    final Brand brand1 = new Brand(new BrandId("brand1"), "name1");
+    final Brand brand2 = new Brand(new BrandId("brand2"), "name2");
+    final Brand brand3 = new Brand(new BrandId("brand3"), "name3");
 
     brandRepository.saveAll(List.of(brand1, brand2, brand3));
 

@@ -40,6 +40,6 @@ public class BrandSaveService {
 
   private Brand mapToBrand(final BrandSaveRequest request) {
     final BrandId brandId = new BrandId(request.id());
-    return new Brand(brandId, request.name(), request.englishName());
+    return new Brand(brandId, request.name());
   }
 }
