@@ -1,0 +1,31 @@
+<!doctype html>
+<html layout:decorate="layout">
+<head>
+  <title th:text="${title}">MSS Price Tracker</title>
+  <style>
+    .search-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 80vh;
+    }
+
+    .search-box {
+      width: 100%;
+      max-width: 600px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container search-container" layout:fragment="content">
+  <form action="/products/search" class="search-box" method="get">
+    <div class="input-group">
+      <input class="form-control" name="keyword" placeholder="상품명 입력" type="text">
+      <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+  </form>
+</div>
+
+</body>
+</html>
