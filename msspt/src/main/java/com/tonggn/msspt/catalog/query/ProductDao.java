@@ -45,7 +45,7 @@ public class ProductDao {
                 WHERE p.name LIKE :keyword
                 LIMIT :limit OFFSET :offset) p
                    JOIN price_history ph ON p.id = ph.product_id
-          """;
+        """;
 
     final Map<String, Object> params = Map.of(
         "keyword", "%" + keyword + "%",
@@ -63,7 +63,7 @@ public class ProductDao {
         final String image_url = rs.getString("image_url");
         final String brand_name = rs.getString("brand_name");
         final long priceHistoryId = rs.getLong("price_history_id");
-        final long price = rs.getLong("price");
+        final int price = rs.getInt("price");
         final String createdAt = rs.getString("created_at");
 
         final ProductDetail product = products.computeIfAbsent(productId, k -> new ProductDetail(
@@ -115,11 +115,11 @@ public class ProductDao {
       final long id = rs.getLong("id");
       final long goodsNo = rs.getLong("goods_no");
       final String name = rs.getString("name");
-      final long normalPrice = rs.getLong("normal_price");
+      final int normalPrice = rs.getInt("normal_price");
       final String imageUrl = rs.getString("image_url");
       final String brandName = rs.getString("brand_name");
-      final long latestPrice = rs.getLong("latest_price");
-      final long maxPrice = rs.getLong("max_price");
+      final int latestPrice = rs.getInt("latest_price");
+      final int maxPrice = rs.getInt("max_price");
 
       return new PriceDropProductSummary(id, goodsNo, name, normalPrice, imageUrl, brandName,
           latestPrice, maxPrice);

@@ -6,7 +6,7 @@ public record ProductDetail(
     long id,
     long goodsNo,
     String name,
-    Integer normalPrice,
+    int normalPrice,
     String imageUrl,
     String brandName,
     List<Price> sortedPrices
@@ -25,7 +25,7 @@ public record ProductDetail(
 
   public record Price(
       long id,
-      long price,
+      int price,
       String createdAt
   ) {
 

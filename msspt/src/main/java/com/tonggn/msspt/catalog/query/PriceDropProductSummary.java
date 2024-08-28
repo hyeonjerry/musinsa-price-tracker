@@ -4,11 +4,11 @@ public record PriceDropProductSummary(
     long id,
     long goodsNo,
     String name,
-    long normalPrice,
+    int normalPrice,
     String imageUrl,
     String brandName,
-    long latestPrice,
-    long maxPrice
+    int latestPrice,
+    int maxPrice
 ) {
 
 }
