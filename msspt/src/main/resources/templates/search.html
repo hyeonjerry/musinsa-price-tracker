@@ -1,0 +1,149 @@
+<!doctype html>
+<html layout:decorate="layout">
+<head>
+  <title th:text="${title}">MSS Price Tracker</title>
+  <style>
+    .search-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .search-box {
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .card-title {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      height: 48px;
+    }
+
+    .card-img-top {
+      height: 200px;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container" layout:fragment="content">
+  <div class="search-container my-5">
+    <form action="/products/search" class="search-box" method="get">
+      <div class="input-group">
+        <input class="form-control" name="keyword" placeholder="상품명 입력" type="text">
+        <button class="btn btn-primary" type="submit">Search</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 row-cols-xxl-6 g-4" id="product-cards">
+  </div>
+
+  <div class="loading-spinner" id="loading-spinner"
+       style="display: none; text-align: center; margin: 20px 0;">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div class="no-more-products" id="no-more-products"
+       style="display: none; text-align: center; margin: 20px 0;">
+    더 이상 상품이 없습니다.
+  </div>
+</div>
+
+<script layout:fragment="script">
+  let currentPage = 1;
+  let isLoading = false;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initKeyword();
+    fetchProducts();
+    window.addEventListener('scroll', handleScroll);
+  });
+
+  function initKeyword() {
+    const urlParams = new URLSearchParams(window.location.search);
+    document.querySelector('input[name="keyword"]').value = urlParams.get('keyword');
+  }
+
+  function fetchProducts() {
+    if (isLoading) {
+      return;
+    }
+    isLoading = true;
+    const keyword = document.querySelector('input[name="keyword"]').value;
+    const spinner = document.getElementById('loading-spinner');
+    spinner.style.display = 'block';
+
+    fetch(`/api/products/search?keyword=${keyword}&page=${currentPage}`)
+    .then(response => response.json())
+    .then(products => {
+      if (products.length === 0) {
+        isLoading = true;
+        spinner.style.display = 'none';
+        document.getElementById('no-more-products').style.display = 'block';
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      products.forEach(product => {
+        const card = mapToCard(product);
+        fragment.appendChild(card);
+      });
+      document.getElementById('product-cards').appendChild(fragment);
+      currentPage++;
+      isLoading = false;
+      spinner.style.display = 'none';
+    });
+  }
+
+  function mapToCard(product) {
+    const col = document.createElement('div');
+    col.className = 'col';
+
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    const img = document.createElement('img');
+    img.className = 'card-img-top';
+    img.alt = product.name;
+    img.src = product.imageUrl;
+    img.loading = 'lazy';
+    card.appendChild(img);
+
+    const cardBody = document.createElement('div');
+    cardBody.className = 'card-body';
+
+    const cardTitle = document.createElement('h5');
+    cardTitle.className = 'card-title';
+    cardTitle.textContent = product.name;
+    cardBody.appendChild(cardTitle);
+
+    const cardText = document.createElement('p');
+    cardText.className = 'card-text';
+    cardText.innerHTML = `
+        원가: <span>${product.normalPrice}원</span><br>
+        현재 가격: <span>${product.sortedPrices[0].price}원</span><br>
+        이전 가격: <span>${product.sortedPrices.length >= 2 ? product.sortedPrices[1].price : '-'}원</span>
+      `;
+    cardBody.appendChild(cardText);
+
+    card.appendChild(cardBody);
+    col.appendChild(card);
+    return col;
+  }
+
+  function handleScroll() {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500 && !isLoading) {
+      fetchProducts();
+    }
+  }
+</script>
+</body>
+</html>
