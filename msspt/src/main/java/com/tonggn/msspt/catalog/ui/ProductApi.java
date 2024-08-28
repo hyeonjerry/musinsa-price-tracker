@@ -10,15 +10,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/products/search")
+@RequestMapping("/api/products")
 @RequiredArgsConstructor
-public class SearchApi {
+public class ProductApi {
 
   private static final int PAGE_SIZE = 30;
 
   private final ProductDao productDao;
 
-  @GetMapping
+  @GetMapping("/search")
   public List<ProductDetail> search(
       @RequestParam final String keyword,
       @RequestParam(defaultValue = "1") final int page
