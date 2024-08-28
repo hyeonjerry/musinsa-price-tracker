@@ -1,5 +1,6 @@
 package com.tonggn.msspt.catalog.ui;
 
+import com.tonggn.msspt.catalog.query.PriceDropProductSummary;
 import com.tonggn.msspt.catalog.query.ProductDao;
 import com.tonggn.msspt.catalog.query.ProductDetail;
 import java.util.List;
@@ -25,5 +26,11 @@ public class ProductApi {
   ) {
     final int offset = (page - 1) * PAGE_SIZE;
     return productDao.findByNameContaining(keyword, PAGE_SIZE, offset);
+  }
+
+  @GetMapping("/price-drop")
+  public List<PriceDropProductSummary> priceDrop(@RequestParam(defaultValue = "1") final int page) {
+    final int offset = (page - 1) * PAGE_SIZE;
+    return productDao.findPriceDropProducts(PAGE_SIZE, offset);
   }
 }
