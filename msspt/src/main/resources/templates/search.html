@@ -57,93 +57,97 @@
   </div>
 </div>
 
-<script layout:fragment="script">
-  let currentPage = 1;
-  let isLoading = false;
+<th:block layout:fragment="script">
+  <script src="/js/product-utils.js"></script>
+  <script>
+    let currentPage = 1;
+    let isLoading = false;
 
-  document.addEventListener('DOMContentLoaded', () => {
-    initKeyword();
-    fetchProducts();
-    window.addEventListener('scroll', handleScroll);
-  });
+    document.addEventListener('DOMContentLoaded', () => {
+      initKeyword();
+      fetchProducts();
+      window.addEventListener('scroll', handleScroll);
+    });
 
-  function initKeyword() {
-    const urlParams = new URLSearchParams(window.location.search);
-    document.querySelector('input[name="keyword"]').value = urlParams.get('keyword');
-  }
-
-  function fetchProducts() {
-    if (isLoading) {
-      return;
+    function initKeyword() {
+      const urlParams = new URLSearchParams(window.location.search);
+      document.querySelector('input[name="keyword"]').value = urlParams.get('keyword');
     }
-    isLoading = true;
-    const keyword = document.querySelector('input[name="keyword"]').value;
-    const spinner = document.getElementById('loading-spinner');
-    spinner.style.display = 'block';
 
-    fetch(`/api/products/search?keyword=${keyword}&page=${currentPage}`)
-    .then(response => response.json())
-    .then(products => {
-      if (products.length === 0) {
-        isLoading = true;
-        spinner.style.display = 'none';
-        document.getElementById('no-more-products').style.display = 'block';
+    function fetchProducts() {
+      if (isLoading) {
         return;
       }
+      isLoading = true;
+      const keyword = document.querySelector('input[name="keyword"]').value;
+      const spinner = document.getElementById('loading-spinner');
+      spinner.style.display = 'block';
 
-      const fragment = document.createDocumentFragment();
-      products.forEach(product => {
-        const card = mapToCard(product);
-        fragment.appendChild(card);
+      fetch(`/api/products/search?keyword=${keyword}&page=${currentPage}`)
+      .then(response => response.json())
+      .then(products => {
+        if (products.length === 0) {
+          isLoading = true;
+          spinner.style.display = 'none';
+          document.getElementById('no-more-products').style.display = 'block';
+          return;
+        }
+
+        const fragment = document.createDocumentFragment();
+        products.forEach(product => {
+          const card = mapToCard(product);
+          fragment.appendChild(card);
+        });
+        document.getElementById('product-cards').appendChild(fragment);
+        currentPage++;
+        isLoading = false;
+        spinner.style.display = 'none';
       });
-      document.getElementById('product-cards').appendChild(fragment);
-      currentPage++;
-      isLoading = false;
-      spinner.style.display = 'none';
-    });
-  }
-
-  function mapToCard(product) {
-    const col = document.createElement('div');
-    col.className = 'col';
-
-    const card = document.createElement('div');
-    card.className = 'card';
-
-    const img = document.createElement('img');
-    img.className = 'card-img-top';
-    img.alt = product.name;
-    img.src = product.imageUrl;
-    img.loading = 'lazy';
-    card.appendChild(img);
-
-    const cardBody = document.createElement('div');
-    cardBody.className = 'card-body';
-
-    const cardTitle = document.createElement('h5');
-    cardTitle.className = 'card-title';
-    cardTitle.textContent = product.name;
-    cardBody.appendChild(cardTitle);
-
-    const cardText = document.createElement('p');
-    cardText.className = 'card-text';
-    cardText.innerHTML = `
-        원가: <span>${product.normalPrice}원</span><br>
-        현재 가격: <span>${product.sortedPrices[0].price}원</span><br>
-        이전 가격: <span>${product.sortedPrices.length >= 2 ? product.sortedPrices[1].price : '-'}원</span>
-      `;
-    cardBody.appendChild(cardText);
-
-    card.appendChild(cardBody);
-    col.appendChild(card);
-    return col;
-  }
-
-  function handleScroll() {
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500 && !isLoading) {
-      fetchProducts();
     }
-  }
-</script>
+
+    function mapToCard(product) {
+      const col = document.createElement('div');
+      col.className = 'col';
+
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      const img = document.createElement('img');
+      img.className = 'card-img-top';
+      img.alt = product.name;
+      img.src = product.imageUrl;
+      img.loading = 'lazy';
+      card.appendChild(img);
+
+      const cardBody = document.createElement('div');
+      cardBody.className = 'card-body';
+
+      const cardTitle = document.createElement('h5');
+      cardTitle.className = 'card-title';
+      cardTitle.textContent = product.name;
+      cardBody.appendChild(cardTitle);
+
+      const cardText = document.createElement('p');
+      cardText.className = 'card-text';
+      cardText.innerHTML = `
+        원가: <span>${formatPrice(product.normalPrice)}원</span><br>
+        현재 가격: <span>${formatPrice(product.sortedPrices[0].price)}원</span><br>
+        이전 가격: <span>${product.sortedPrices.length >= 2 ? formatPrice(product.sortedPrices[1].price)
+          : '-'}원</span>
+      `;
+      cardBody.appendChild(cardText);
+
+      card.appendChild(cardBody);
+      col.appendChild(card);
+      return col;
+    }
+
+    function handleScroll() {
+      if (isBottom()) {
+        fetchProducts();
+      }
+    }
+  </script>
+</th:block>
 </body>
 </html>
