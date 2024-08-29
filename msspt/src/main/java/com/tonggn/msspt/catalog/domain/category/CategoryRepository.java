@@ -1,7 +1,9 @@
 package com.tonggn.msspt.catalog.domain.category;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+import org.springframework.data.repository.Repository;
 
-public interface CategoryRepository extends JpaRepository<Category, CategoryId> {
+public interface CategoryRepository extends Repository<Category, Long> {
 
+  List<Category> findAll();
 }

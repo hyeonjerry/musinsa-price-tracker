@@ -3,10 +3,10 @@ package com.tonggn.msspt.catalog.batch;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tonggn.msspt.catalog.application.BrandSaveRequest;
 import com.tonggn.msspt.catalog.application.BrandSaveService;
-import com.tonggn.msspt.catalog.application.CategoryQueryService;
-import com.tonggn.msspt.catalog.application.CategoryResponse;
 import com.tonggn.msspt.catalog.application.ProductUpdateRequest;
 import com.tonggn.msspt.catalog.application.ProductUpdateService;
+import com.tonggn.msspt.catalog.domain.category.Category;
+import com.tonggn.msspt.catalog.domain.category.CategoryRepository;
 import com.tonggn.msspt.catalog.utils.CatalogItem;
 import com.tonggn.msspt.catalog.utils.CatalogParser;
 import com.tonggn.msspt.catalog.utils.HttpClient;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 public class CatalogUpdateScheduler {
 
   private final CatalogParser catalogParser;
-  private final CategoryQueryService categoryQueryService;
+  private final CategoryRepository categoryRepository;
   private final BrandSaveService brandSaveService;
   private final ProductUpdateService productUpdateService;
 
@@ -42,19 +42,20 @@ public class CatalogUpdateScheduler {
   @Scheduled(cron = "0 0 2 * * *") // 초 분 시 일 월 요일
   public void update() {
     final HttpClient httpClient = new ProxyHttpClient(proxyHost, proxyPort);
-    final List<CategoryResponse> categories = categoryQueryService.getCategories();
-    for (final CategoryResponse category : categories) {
+    final List<Category> categories = categoryRepository.findAll();
+    for (final Category category : categories) {
       updateCatalogByCategory(category, httpClient);
     }
   }
 
   private void updateCatalogByCategory(
-      final CategoryResponse category,
+      final Category category,
       final HttpClient httpClient
   ) {
     int page = 1;
     while (true) {
-      final String url = getApiUrl(category.id(), page);
+      final String categoryId = category.getId().getValue();
+      final String url = getApiUrl(categoryId, page);
       final List<CatalogItem> items = fetchItemsByUrl(url, httpClient);
       saveItems(items, category);
       if (items.isEmpty()) {
@@ -79,12 +80,12 @@ public class CatalogUpdateScheduler {
     return List.of();
   }
 
-  private void saveItems(final List<CatalogItem> items, final CategoryResponse category) {
+  private void saveItems(final List<CatalogItem> items, final Category category) {
     final Set<BrandSaveRequest> brands = items.stream()
         .map(BrandSaveRequest::from)
         .collect(Collectors.toUnmodifiableSet());
     final List<ProductUpdateRequest> products = items.stream()
-        .map(item -> ProductUpdateRequest.of(item, category.id()))
+        .map(item -> ProductUpdateRequest.of(item, category.getId().getValue()))
         .toList();
     brandSaveService.saveOnlyNewBrands(brands);
     productUpdateService.saveOrUpdateProducts(products);
