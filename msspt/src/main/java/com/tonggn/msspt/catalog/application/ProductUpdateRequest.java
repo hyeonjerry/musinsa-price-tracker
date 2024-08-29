@@ -1,5 +1,6 @@
 package com.tonggn.msspt.catalog.application;
 
+import com.tonggn.msspt.catalog.domain.category.CategoryId;
 import com.tonggn.msspt.catalog.utils.CatalogItem;
 
 public record ProductUpdateRequest(
@@ -9,10 +10,10 @@ public record ProductUpdateRequest(
     int price,
     String imageUrl,
     String brandId,
-    String categoryId
+    CategoryId categoryId
 ) {
 
-  public static ProductUpdateRequest of(final CatalogItem item, final String categoryId) {
+  public static ProductUpdateRequest of(final CatalogItem item, final CategoryId categoryId) {
     return new ProductUpdateRequest(item.goodsNo(), item.goodsName(), item.normalPrice(),
         item.price(), item.imageUrl(), item.brand(), categoryId);
   }

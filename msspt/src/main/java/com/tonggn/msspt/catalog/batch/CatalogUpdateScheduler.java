@@ -85,7 +85,7 @@ public class CatalogUpdateScheduler {
         .map(BrandSaveRequest::from)
         .collect(Collectors.toUnmodifiableSet());
     final List<ProductUpdateRequest> products = items.stream()
-        .map(item -> ProductUpdateRequest.of(item, category.getId().getValue()))
+        .map(item -> ProductUpdateRequest.of(item, category.getId()))
         .toList();
     brandSaveService.saveOnlyNewBrands(brands);
     productUpdateService.saveOrUpdateProducts(products);

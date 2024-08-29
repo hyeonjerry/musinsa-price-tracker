@@ -1,7 +1,6 @@
 package com.tonggn.msspt.catalog.application;
 
 import com.tonggn.msspt.catalog.domain.brand.BrandId;
-import com.tonggn.msspt.catalog.domain.category.CategoryId;
 import com.tonggn.msspt.catalog.domain.product.Product;
 import com.tonggn.msspt.catalog.domain.product.ProductRepository;
 import java.util.List;
@@ -45,8 +44,7 @@ public class ProductUpdateService {
 
   private Product mapToProduct(final ProductUpdateRequest request) {
     final BrandId brandId = new BrandId(request.brandId());
-    final CategoryId categoryid = new CategoryId(request.categoryId());
     return new Product(request.goodsNo(), request.name(), request.normalPrice(),
-        request.imageUrl(), brandId, categoryid);
+        request.imageUrl(), brandId, request.categoryId());
   }
 }
