@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.tonggn.msspt.catalog.domain.brand.BrandId;
 import com.tonggn.msspt.catalog.domain.category.CategoryId;
+import com.tonggn.msspt.catalog.domain.product.GoodsNo;
 import com.tonggn.msspt.catalog.domain.product.Product;
 import com.tonggn.msspt.catalog.domain.product.ProductRepository;
 import java.util.List;
@@ -36,9 +37,9 @@ class ProductUpdateServiceTest {
     // given
     final List<Integer> expectPrices = List.of(1000, 2000);
     final List<ProductUpdateRequest> requests = List.of(
-        new ProductUpdateRequest(1L, "name", 1000, expectPrices.get(0),
+        new ProductUpdateRequest(new GoodsNo(1L), "name", 1000, expectPrices.get(0),
             "imageUrl", "brand", new CategoryId("category")),
-        new ProductUpdateRequest(2L, "name", 2000, expectPrices.get(1),
+        new ProductUpdateRequest(new GoodsNo(2L), "name", 2000, expectPrices.get(1),
             "imageUrl", "brand", new CategoryId("category"))
     );
     final List<Product> expects = requests.stream()

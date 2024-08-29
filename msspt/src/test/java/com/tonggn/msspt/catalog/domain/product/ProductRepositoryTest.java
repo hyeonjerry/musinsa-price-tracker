@@ -26,15 +26,18 @@ class ProductRepositoryTest {
   void findByGoodsNoInWithPriceHistoriesTest() {
     // given
     final List<Product> expect = List.of(
-        new Product(1L, "name", 2000, "imageUrl", new BrandId("brand"), new CategoryId("category")),
-        new Product(2L, "name", 2000, "imageUrl", new BrandId("brand"), new CategoryId("category")),
-        new Product(3L, "name", 2000, "imageUrl", new BrandId("brand"), new CategoryId("category"))
+        new Product(new GoodsNo(1L), "name", 2000, "imageUrl", new BrandId("brand"),
+            new CategoryId("category")),
+        new Product(new GoodsNo(2L), "name", 2000, "imageUrl", new BrandId("brand"),
+            new CategoryId("category")),
+        new Product(new GoodsNo(3L), "name", 2000, "imageUrl", new BrandId("brand"),
+            new CategoryId("category"))
     );
     expect.forEach(product -> product.addLastPrice(1000));
     productRepository.saveAll(expect);
 
     // when
-    final List<Long> goodsNos = expect.stream()
+    final List<GoodsNo> goodsNos = expect.stream()
         .map(Product::getGoodsNo)
         .toList();
     final List<Product> actual = productRepository.findByGoodsNoIn(goodsNos);

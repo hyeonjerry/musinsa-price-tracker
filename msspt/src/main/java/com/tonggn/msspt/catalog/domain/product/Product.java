@@ -28,8 +28,8 @@ public class Product {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(nullable = false, unique = true)
-  private Long goodsNo;
+  @Embedded
+  private GoodsNo goodsNo;
 
   @Column(nullable = false)
   private String name;
@@ -53,8 +53,8 @@ public class Product {
   @LastModifiedDate
   private LocalDateTime updatedAt;
 
-  public Product(final Long goodsNo, final String name, final Integer price, final String imageUrl,
-      final BrandId brandId, final CategoryId category) {
+  public Product(final GoodsNo goodsNo, final String name, final Integer price,
+      final String imageUrl, final BrandId brandId, final CategoryId category) {
     this.goodsNo = goodsNo;
     this.name = name;
     this.priceDetails = new PriceDetails(price);

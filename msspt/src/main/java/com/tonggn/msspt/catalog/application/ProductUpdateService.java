@@ -1,6 +1,7 @@
 package com.tonggn.msspt.catalog.application;
 
 import com.tonggn.msspt.catalog.domain.brand.BrandId;
+import com.tonggn.msspt.catalog.domain.product.GoodsNo;
 import com.tonggn.msspt.catalog.domain.product.Product;
 import com.tonggn.msspt.catalog.domain.product.ProductRepository;
 import java.util.List;
@@ -18,13 +19,7 @@ public class ProductUpdateService {
   private final ProductRepository productRepository;
 
   public void saveOrUpdateProducts(final List<ProductUpdateRequest> requests) {
-    final List<Long> goodsNos = requests.stream()
-        .map(ProductUpdateRequest::goodsNo)
-        .toList();
-
-    final Map<Long, Product> existingProducts = productRepository
-        .findByGoodsNoIn(goodsNos).stream()
-        .collect(Collectors.toMap(Product::getGoodsNo, product -> product));
+    final Map<GoodsNo, Product> existingProducts = fetchExistingProducts(requests);
 
     final List<Product> products = requests.stream()
         .map(request -> addPriceToProduct(request, existingProducts))
@@ -33,9 +28,18 @@ public class ProductUpdateService {
     productRepository.saveAll(products);
   }
 
+  private Map<GoodsNo, Product> fetchExistingProducts(final List<ProductUpdateRequest> requests) {
+    final List<GoodsNo> goodsNos = requests.stream()
+        .map(ProductUpdateRequest::goodsNo)
+        .toList();
+
+    return productRepository.findByGoodsNoIn(goodsNos).stream()
+        .collect(Collectors.toMap(Product::getGoodsNo, product -> product));
+  }
+
   private Product addPriceToProduct(
       final ProductUpdateRequest request,
-      final Map<Long, Product> existingProducts
+      final Map<GoodsNo, Product> existingProducts
   ) {
     final Product product = existingProducts.getOrDefault(request.goodsNo(), mapToProduct(request));
     product.addLastPrice(request.price());

@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-  List<Product> findByGoodsNoIn(List<Long> goodsNos);
+  List<Product> findByGoodsNoIn(List<GoodsNo> goodsNos);
 }
