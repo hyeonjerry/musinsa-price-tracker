@@ -56,7 +56,7 @@ class ProductUpdateServiceTest {
     final List<Product> actualProducts = productRepository.findAll();
     assertThat(actualProducts)
         .usingRecursiveComparison()
-        .ignoringFields("id", "priceHistories", "createdAt", "updatedAt")
+        .ignoringFields("id", "priceDetails.priceHistories", "createdAt", "updatedAt")
         .isEqualTo(expects);
 
     final MapSqlParameterSource ids = new MapSqlParameterSource("ids",

@@ -2,18 +2,14 @@ package com.tonggn.msspt.catalog.domain.product;
 
 import com.tonggn.msspt.catalog.domain.brand.BrandId;
 import com.tonggn.msspt.catalog.domain.category.CategoryId;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -38,12 +34,8 @@ public class Product {
   @Column(nullable = false)
   private String name;
 
-  @Column(nullable = false)
-  private Integer normalPrice;
-
-  @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST,
-      CascadeType.MERGE})
-  private List<PriceHistory> priceHistories = new ArrayList<>();
+  @Embedded
+  private PriceDetails priceDetails;
 
   @Column(nullable = false)
   private String imageUrl;
@@ -61,17 +53,21 @@ public class Product {
   @LastModifiedDate
   private LocalDateTime updatedAt;
 
-  public Product(final Long goodsNo, final String name, final Integer normalPrice,
-      final String imageUrl, final BrandId brandId, final CategoryId category) {
+  public Product(final Long goodsNo, final String name, final Integer price, final String imageUrl,
+      final BrandId brandId, final CategoryId category) {
     this.goodsNo = goodsNo;
     this.name = name;
-    this.normalPrice = normalPrice;
+    this.priceDetails = new PriceDetails(price);
     this.imageUrl = imageUrl;
     this.brandId = brandId;
     this.category = category;
   }
 
+  public List<PriceHistory> getPriceHistories() {
+    return priceDetails.getPriceHistories();
+  }
+
   public void addLastPrice(final int price) {
-    priceHistories.add(new PriceHistory(this, price));
+    priceDetails.addLastPrice(this, price);
   }
 }
