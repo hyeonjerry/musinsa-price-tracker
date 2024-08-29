@@ -26,11 +26,11 @@ class ProductRepositoryTest {
   void findByGoodsNoInWithPriceHistoriesTest() {
     // given
     final List<Product> expect = List.of(
-        new Product(new GoodsNo(1L), "name", 2000, "imageUrl", new BrandId("brand"),
+        new Product(new GoodsNo(1L), "name", 2000, 2000, "imageUrl", new BrandId("brand"),
             new CategoryId("category")),
-        new Product(new GoodsNo(2L), "name", 2000, "imageUrl", new BrandId("brand"),
+        new Product(new GoodsNo(2L), "name", 2000, 2000, "imageUrl", new BrandId("brand"),
             new CategoryId("category")),
-        new Product(new GoodsNo(3L), "name", 2000, "imageUrl", new BrandId("brand"),
+        new Product(new GoodsNo(3L), "name", 2000, 2000, "imageUrl", new BrandId("brand"),
             new CategoryId("category"))
     );
     expect.forEach(product -> product.addLastPrice(1000));

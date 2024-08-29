@@ -53,11 +53,12 @@ public class Product {
   @LastModifiedDate
   private LocalDateTime updatedAt;
 
-  public Product(final GoodsNo goodsNo, final String name, final Integer price,
-      final String imageUrl, final BrandId brandId, final CategoryId category) {
+  public Product(final GoodsNo goodsNo, final String name, final Integer normalPrice,
+      final Integer price, final String imageUrl, final BrandId brandId,
+      final CategoryId category) {
     this.goodsNo = goodsNo;
     this.name = name;
-    this.priceDetails = new PriceDetails(price);
+    this.priceDetails = new PriceDetails(normalPrice, price);
     this.imageUrl = imageUrl;
     this.brandId = brandId;
     this.category = category;

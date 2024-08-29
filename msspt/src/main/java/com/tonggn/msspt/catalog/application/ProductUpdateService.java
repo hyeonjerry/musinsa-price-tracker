@@ -46,7 +46,7 @@ public class ProductUpdateService {
   }
 
   private Product newProduct(final ProductUpdateRequest request) {
-    return new Product(request.goodsNo(), request.name(), request.normalPrice(),
+    return new Product(request.goodsNo(), request.name(), request.normalPrice(), request.price(),
         request.imageUrl(), request.brandId(), request.categoryId());
   }
 }

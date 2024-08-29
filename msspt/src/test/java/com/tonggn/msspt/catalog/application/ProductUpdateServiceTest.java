@@ -69,7 +69,7 @@ class ProductUpdateServiceTest {
   }
 
   private Product mapToProduct(final ProductUpdateRequest request) {
-    return new Product(request.goodsNo(), request.name(), request.normalPrice(), request.imageUrl(),
-        request.brandId(), request.categoryId());
+    return new Product(request.goodsNo(), request.name(), request.normalPrice(), request.price(),
+        request.imageUrl(), request.brandId(), request.categoryId());
   }
 }

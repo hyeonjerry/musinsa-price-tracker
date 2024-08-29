@@ -16,7 +16,7 @@ class ProductTest {
   @DisplayName("Product에 최근 가격을 추가한다.")
   void addLastPriceTest(final int price) {
     // given
-    final Product product = new Product(new GoodsNo(1L), "name", 2000, "imageUrl",
+    final Product product = new Product(new GoodsNo(1L), "name", 2000, 2000, "imageUrl",
         new BrandId("brand"), new CategoryId("category"));
 
     // when
