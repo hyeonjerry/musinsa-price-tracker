@@ -38,9 +38,9 @@ class ProductUpdateServiceTest {
     final List<Integer> expectPrices = List.of(1000, 2000);
     final List<ProductUpdateRequest> requests = List.of(
         new ProductUpdateRequest(new GoodsNo(1L), "name", 1000, expectPrices.get(0),
-            "imageUrl", "brand", new CategoryId("category")),
+            "imageUrl", new BrandId("brand"), new CategoryId("category")),
         new ProductUpdateRequest(new GoodsNo(2L), "name", 2000, expectPrices.get(1),
-            "imageUrl", "brand", new CategoryId("category"))
+            "imageUrl", new BrandId("brand"), new CategoryId("category"))
     );
     final List<Product> expects = requests.stream()
         .map(request -> {
@@ -70,6 +70,6 @@ class ProductUpdateServiceTest {
 
   private Product mapToProduct(final ProductUpdateRequest request) {
     return new Product(request.goodsNo(), request.name(), request.normalPrice(), request.imageUrl(),
-        new BrandId(request.brandId()), request.categoryId());
+        request.brandId(), request.categoryId());
   }
 }

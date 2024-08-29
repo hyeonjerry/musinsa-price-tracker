@@ -1,6 +1,5 @@
 package com.tonggn.msspt.catalog.application;
 
-import com.tonggn.msspt.catalog.domain.brand.BrandId;
 import com.tonggn.msspt.catalog.domain.product.GoodsNo;
 import com.tonggn.msspt.catalog.domain.product.Product;
 import com.tonggn.msspt.catalog.domain.product.ProductRepository;
@@ -22,7 +21,7 @@ public class ProductUpdateService {
     final Map<GoodsNo, Product> existingProducts = fetchExistingProducts(requests);
 
     final List<Product> products = requests.stream()
-        .map(request -> addPriceToProduct(request, existingProducts))
+        .map(request -> mapToProductAndAddPrice(request, existingProducts))
         .toList();
 
     productRepository.saveAll(products);
@@ -37,18 +36,17 @@ public class ProductUpdateService {
         .collect(Collectors.toMap(Product::getGoodsNo, product -> product));
   }
 
-  private Product addPriceToProduct(
+  private Product mapToProductAndAddPrice(
       final ProductUpdateRequest request,
       final Map<GoodsNo, Product> existingProducts
   ) {
-    final Product product = existingProducts.getOrDefault(request.goodsNo(), mapToProduct(request));
+    final Product product = existingProducts.getOrDefault(request.goodsNo(), newProduct(request));
     product.addLastPrice(request.price());
     return product;
   }
 
-  private Product mapToProduct(final ProductUpdateRequest request) {
-    final BrandId brandId = new BrandId(request.brandId());
+  private Product newProduct(final ProductUpdateRequest request) {
     return new Product(request.goodsNo(), request.name(), request.normalPrice(),
-        request.imageUrl(), brandId, request.categoryId());
+        request.imageUrl(), request.brandId(), request.categoryId());
   }
 }
