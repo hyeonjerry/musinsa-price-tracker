@@ -127,4 +127,56 @@ public class ProductDao {
 
     return namedJdbc.query(sql, params, priceDropProductSummaryRowMapper);
   }
+
+  public ProductDetail findById(final long id) {
+    final String sql = """
+        SELECT p.id,
+               p.goods_no,
+               p.name,
+               p.normal_price,
+               p.image_url,
+               b.name as brand_name,
+               ph.id AS price_history_id,
+               ph.price,
+               ph.created_at
+        FROM product p
+              JOIN brand b ON p.brand_id = b.brand_id
+              JOIN price_history ph ON p.id = ph.product_id
+        WHERE p.id = :id
+        """;
+
+    final Map<String, Object> params = Map.of("id", id);
+
+    final ResultSetExtractor<ProductDetail> productDetailExtractor = rs -> {
+      rs.next();
+
+      final long productId = rs.getLong("id");
+      final long goods_no = rs.getLong("goods_no");
+      final String name = rs.getString("name");
+      final int normal_price = rs.getInt("normal_price");
+      final String image_url = rs.getString("image_url");
+      final String brand_name = rs.getString("brand_name");
+
+      final ProductDetail product = new ProductDetail(
+          productId,
+          goods_no,
+          name,
+          normal_price,
+          image_url,
+          brand_name,
+          new ArrayList<>()
+      );
+
+      do {
+        final long priceHistoryId = rs.getLong("price_history_id");
+        final int price = rs.getInt("price");
+        final String createdAt = rs.getString("created_at");
+        product.addPrice(new Price(priceHistoryId, price, createdAt));
+      } while (rs.next());
+
+      return product;
+    };
+
+    return namedJdbc.query(sql, params, productDetailExtractor);
+  }
 }

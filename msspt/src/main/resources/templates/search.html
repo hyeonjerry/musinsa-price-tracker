@@ -112,12 +112,17 @@
       const card = document.createElement('div');
       card.className = 'card';
 
+      const link = document.createElement('a');
+      link.href = `/products/${product.id}`;
+      link.style.textDecoration = 'none';
+      link.style.color = 'inherit';
+
       const img = document.createElement('img');
       img.className = 'card-img-top';
       img.alt = product.name;
       img.src = product.imageUrl;
       img.loading = 'lazy';
-      card.appendChild(img);
+      link.appendChild(img);
 
       const cardBody = document.createElement('div');
       cardBody.className = 'card-body';
@@ -125,7 +130,9 @@
       const cardTitle = document.createElement('h5');
       cardTitle.className = 'card-title';
       cardTitle.textContent = product.name;
-      cardBody.appendChild(cardTitle);
+      link.appendChild(cardTitle);
+
+      cardBody.appendChild(link);
 
       const cardText = document.createElement('p');
       cardText.className = 'card-text';
