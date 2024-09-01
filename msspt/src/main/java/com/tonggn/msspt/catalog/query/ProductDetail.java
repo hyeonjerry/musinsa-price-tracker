@@ -7,6 +7,12 @@ public record ProductDetail(
     long goodsNo,
     String name,
     int normalPrice,
+    int latestPrice,
+    int beforeLatestPrice,
+    int weeklyLowestPrice,
+    int weeklyHighestPrice,
+    int monthlyLowestPrice,
+    int monthlyHighestPrice,
     String imageUrl,
     String brandName,
     List<Price> sortedPrices

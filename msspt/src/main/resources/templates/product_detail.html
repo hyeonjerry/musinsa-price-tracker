@@ -64,6 +64,22 @@
             <th scope="row">이전 가격</th>
             <td id="product-previous-price"></td>
           </tr>
+          <tr>
+            <th scope="row">1주일 최저가</th>
+            <td id="product-weekly-lowest-price"></td>
+          </tr>
+          <tr>
+            <th scope="row">1주일 최고가</th>
+            <td id="product-weekly-highest-price"></td>
+          </tr>
+          <tr>
+            <th scope="row">1달 최저가</th>
+            <td id="product-monthly-lowest-price"></td>
+          </tr>
+          <tr>
+            <th scope="row">1달 최고가</th>
+            <td id="product-monthly-highest-price"></td>
+          </tr>
           </tbody>
         </table>
 
@@ -105,6 +121,14 @@
         document.getElementById(
             'product-previous-price').textContent = `${product.sortedPrices.length >= 2
             ? formatPrice(product.sortedPrices[1].price) : '-'}원`;
+        document.getElementById('product-weekly-lowest-price').textContent = `${formatPrice(
+            product.weeklyLowestPrice)}원`;
+        document.getElementById('product-weekly-highest-price').textContent = `${formatPrice(
+            product.weeklyHighestPrice)}원`;
+        document.getElementById('product-monthly-lowest-price').textContent = `${formatPrice(
+            product.monthlyLowestPrice)}원`;
+        document.getElementById('product-monthly-highest-price').textContent = `${formatPrice(
+            product.monthlyHighestPrice)}원`;
         document.getElementById('product-last-update').textContent = new Date(
             product.sortedPrices[0].createdAt).toLocaleString();
       }
