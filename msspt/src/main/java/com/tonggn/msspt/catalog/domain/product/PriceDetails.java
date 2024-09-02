@@ -168,6 +168,6 @@ public class PriceDetails {
 
   private boolean isInRangePriceHistory(final PriceHistory priceHistory, final int days) {
     return priceHistory.getCreatedAt().toLocalDate()
-        .isAfter(LocalDate.now().minusDays(days));
+        .isAfter(LocalDate.now().minusDays(days + 1));
   }
 }
