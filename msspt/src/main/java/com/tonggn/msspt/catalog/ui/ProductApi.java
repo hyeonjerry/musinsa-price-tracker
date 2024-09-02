@@ -1,8 +1,8 @@
 package com.tonggn.msspt.catalog.ui;
 
-import com.tonggn.msspt.catalog.query.PriceDropProductSummary;
 import com.tonggn.msspt.catalog.query.ProductDao;
 import com.tonggn.msspt.catalog.query.ProductDetail;
+import com.tonggn.msspt.catalog.query.ProductSummaryResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,9 +30,9 @@ public class ProductApi {
   }
 
   @GetMapping("/price-drop")
-  public List<PriceDropProductSummary> priceDrop(@RequestParam(defaultValue = "1") final int page) {
+  public List<ProductSummaryResponse> priceDrop(@RequestParam(defaultValue = "1") final int page) {
     final int offset = (page - 1) * PAGE_SIZE;
-    return productDao.findPriceDropProducts(PAGE_SIZE, offset);
+    return productDao.findWeeklyPriceDropProducts(PAGE_SIZE, offset);
   }
 
   @GetMapping("/{id}")

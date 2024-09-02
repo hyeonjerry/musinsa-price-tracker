@@ -109,7 +109,7 @@
       cardText.innerHTML = `
         원가: <span>${formatPrice(product.normalPrice)}원</span><br>
         현재 가격: <span>${formatPrice(product.latestPrice)}원</span><br>
-        1주일 최고가: <span>${formatPrice(product.maxPrice)}원</span>
+        1주일 최고가: <span>${formatPrice(product.weeklyHighestPrice)}원</span>
       `;
       cardBody.appendChild(cardText);
 

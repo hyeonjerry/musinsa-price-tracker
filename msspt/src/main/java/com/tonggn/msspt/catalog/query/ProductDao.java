@@ -113,46 +113,59 @@ public class ProductDao {
     return namedJdbc.query(sql, params, productDetailExtractor);
   }
 
-  public List<PriceDropProductSummary> findPriceDropProducts(final int pageSize, final int offset) {
+  public List<ProductSummaryResponse> findWeeklyPriceDropProducts(
+      final int pageSize,
+      final int offset
+  ) {
     final String sql = """
-        SELECT *
-        FROM (SELECT p.id,
-                     p.goods_no,
-                     p.name,
-                     p.normal_price,
-                     p.image_url,
-                     b.name                                 AS brand_name,
-                     ph_latest.price                        AS latest_price,
-                     MAX(ph_week.price)                     AS max_price,
-                     (ph_latest.price - MAX(ph_week.price)) AS price_diff
-              FROM product p
-                       JOIN brand b ON p.brand_id = b.brand_id
-                       JOIN price_history ph_latest ON p.id = ph_latest.product_id
-                       JOIN price_history ph_week ON p.id = ph_week.product_id
-              WHERE ph_latest.created_at = (SELECT MAX(ph.created_at)
-                                            FROM price_history ph
-                                            WHERE ph.product_id = p.id)
-                AND ph_week.created_at >= NOW() - INTERVAL 1 WEEK
-              GROUP BY p.id, p.goods_no, p.name, p.normal_price, p.image_url, b.name, ph_latest.price
-              ORDER BY price_diff
-              LIMIT :limit OFFSET :offset) as price_drop_table
-        where price_diff < 0
+        SELECT p.id,
+               p.goods_no,
+               p.name,
+               p.normal_price,
+               p.latest_price,
+               p.before_latest_price,
+               p.weekly_lowest_price,
+               p.weekly_lowest_date,
+               p.weekly_highest_price,
+               p.weekly_highest_date,
+               p.monthly_lowest_price,
+               p.monthly_lowest_date,
+               p.monthly_highest_price,
+               p.monthly_highest_date,
+               p.image_url,
+               b.name                                                                     AS brand_name,
+               ((p.latest_price - p.weekly_highest_price) / p.weekly_highest_price) * 100 AS drop_rate
+        FROM product p
+                 JOIN brand b ON p.brand_id = b.brand_id
+        WHERE ((p.latest_price - p.weekly_highest_price) / p.weekly_highest_price) * 100 < 0
+        ORDER BY drop_rate
+        LIMIT :limit OFFSET :offset;
         """;
 
     final Map<String, Object> params = Map.of("limit", pageSize, "offset", offset);
 
-    final RowMapper<PriceDropProductSummary> priceDropProductSummaryRowMapper = (rs, rowNum) -> {
+    final RowMapper<ProductSummaryResponse> priceDropProductSummaryRowMapper = (rs, rowNum) -> {
       final long id = rs.getLong("id");
       final long goodsNo = rs.getLong("goods_no");
       final String name = rs.getString("name");
       final int normalPrice = rs.getInt("normal_price");
+      final int latestPrice = rs.getInt("latest_price");
+      final int beforeLatestPrice = rs.getInt("before_latest_price");
+      final int weeklyLowestPrice = rs.getInt("weekly_lowest_price");
+      final String weeklyLowestDate = rs.getString("weekly_lowest_date");
+      final int weeklyHighestPrice = rs.getInt("weekly_highest_price");
+      final String weeklyHighestDate = rs.getString("weekly_highest_date");
+      final int monthlyLowestPrice = rs.getInt("monthly_lowest_price");
+      final String monthlyLowestDate = rs.getString("monthly_lowest_date");
+      final int monthlyHighestPrice = rs.getInt("monthly_highest_price");
+      final String monthlyHighestDate = rs.getString("monthly_highest_date");
       final String imageUrl = rs.getString("image_url");
       final String brandName = rs.getString("brand_name");
-      final int latestPrice = rs.getInt("latest_price");
-      final int maxPrice = rs.getInt("max_price");
 
-      return new PriceDropProductSummary(id, goodsNo, name, normalPrice, imageUrl, brandName,
-          latestPrice, maxPrice);
+      return new ProductSummaryResponse(id, goodsNo, name, normalPrice, latestPrice,
+          beforeLatestPrice, weeklyLowestPrice, weeklyLowestDate, weeklyHighestPrice,
+          weeklyHighestDate, monthlyLowestPrice, monthlyLowestDate, monthlyHighestPrice,
+          monthlyHighestDate, imageUrl, brandName);
     };
 
     return namedJdbc.query(sql, params, priceDropProductSummaryRowMapper);
