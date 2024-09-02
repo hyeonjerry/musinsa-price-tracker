@@ -5,8 +5,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -15,7 +17,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-class PriceDetails {
+public class PriceDetails {
+
+  private static final int A_WEEK = 7;
+  private static final int A_MONTH = 30;
 
   @Column(nullable = false, updatable = false)
   private Integer normalPrice;
@@ -47,6 +52,7 @@ class PriceDetails {
   @Getter(AccessLevel.NONE)
   @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST,
       CascadeType.MERGE})
+  @OrderBy("createdAt DESC")
   private List<PriceHistory> priceHistories = new ArrayList<>();
 
   PriceDetails(final Integer normalPrice, final Integer currentPrice) {
@@ -99,5 +105,69 @@ class PriceDetails {
       monthlyHighestPrice = price;
       monthlyHighestDate = LocalDate.now();
     }
+  }
+
+  public void updateOutdatedPeriodicPrices() {
+    updateWeeklyLowestPriceIfOutdated();
+    updateWeeklyHighestPriceIfOutdated();
+    updateMonthlyLowestPriceIfOutdated();
+    updateMonthlyHighestPriceIfOutdated();
+  }
+
+  private void updateWeeklyLowestPriceIfOutdated() {
+    if (isOutdated(weeklyLowestDate, A_WEEK)) {
+      priceHistories.stream()
+          .filter(ph -> isInRangePriceHistory(ph, A_WEEK))
+          .min(Comparator.comparing(PriceHistory::getPrice))
+          .ifPresent(ph -> {
+            weeklyLowestPrice = ph.getPrice();
+            weeklyLowestDate = ph.getCreatedAt().toLocalDate();
+          });
+    }
+  }
+
+  private void updateWeeklyHighestPriceIfOutdated() {
+    if (isOutdated(weeklyHighestDate, A_WEEK)) {
+      priceHistories.stream()
+          .filter(ph -> isInRangePriceHistory(ph, A_WEEK))
+          .max(Comparator.comparing(PriceHistory::getPrice))
+          .ifPresent(ph -> {
+            weeklyHighestPrice = ph.getPrice();
+            weeklyHighestDate = ph.getCreatedAt().toLocalDate();
+          });
+    }
+  }
+
+  private void updateMonthlyLowestPriceIfOutdated() {
+    if (isOutdated(monthlyLowestDate, A_MONTH)) {
+      priceHistories.stream()
+          .filter(ph -> isInRangePriceHistory(ph, A_MONTH))
+          .min(Comparator.comparing(PriceHistory::getPrice))
+          .ifPresent(ph -> {
+            monthlyLowestPrice = ph.getPrice();
+            monthlyLowestDate = ph.getCreatedAt().toLocalDate();
+          });
+    }
+  }
+
+  private void updateMonthlyHighestPriceIfOutdated() {
+    if (isOutdated(monthlyHighestDate, A_MONTH)) {
+      priceHistories.stream()
+          .filter(ph -> isInRangePriceHistory(ph, A_MONTH))
+          .max(Comparator.comparing(PriceHistory::getPrice))
+          .ifPresent(ph -> {
+            monthlyHighestPrice = ph.getPrice();
+            monthlyHighestDate = ph.getCreatedAt().toLocalDate();
+          });
+    }
+  }
+
+  private boolean isOutdated(final LocalDate date, final int days) {
+    return date.isBefore(LocalDate.now().minusDays(days));
+  }
+
+  private boolean isInRangePriceHistory(final PriceHistory priceHistory, final int days) {
+    return priceHistory.getCreatedAt().toLocalDate()
+        .isAfter(LocalDate.now().minusDays(days));
   }
 }

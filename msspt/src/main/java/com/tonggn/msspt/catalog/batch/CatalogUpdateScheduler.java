@@ -3,6 +3,7 @@ package com.tonggn.msspt.catalog.batch;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tonggn.msspt.catalog.application.BrandSaveRequest;
 import com.tonggn.msspt.catalog.application.BrandSaveService;
+import com.tonggn.msspt.catalog.application.PriceDetailUpdateService;
 import com.tonggn.msspt.catalog.application.ProductUpdateRequest;
 import com.tonggn.msspt.catalog.application.ProductUpdateService;
 import com.tonggn.msspt.catalog.domain.category.Category;
@@ -29,6 +30,7 @@ public class CatalogUpdateScheduler {
   private final CategoryRepository categoryRepository;
   private final BrandSaveService brandSaveService;
   private final ProductUpdateService productUpdateService;
+  private final PriceDetailUpdateService priceDetailUpdateService;
 
   @Value("${mss.api-url}")
   private String apiUrl;
@@ -39,13 +41,14 @@ public class CatalogUpdateScheduler {
   @Value("${mss.proxy.paid-port}")
   private int proxyPort;
 
-  @Scheduled(cron = "0 0 2 * * *") // 초 분 시 일 월 요일
+  @Scheduled(cron = "0 0 1 * * *") // 초 분 시 일 월 요일
   public void update() {
     final HttpClient httpClient = new ProxyHttpClient(proxyHost, proxyPort);
     final List<Category> categories = categoryRepository.findAll();
     for (final Category category : categories) {
       updateCatalogByCategory(category, httpClient);
     }
+    priceDetailUpdateService.updateOutdatedPrices();
   }
 
   private void updateCatalogByCategory(

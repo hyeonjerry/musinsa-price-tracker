@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -26,8 +27,7 @@ class PriceDetailsTest {
     final PriceDetails actual = new PriceDetails(expectNormalPrice, expectCurrentPrice);
 
     // then
-    assertAll(
-        () -> assertThat(actual.getNormalPrice()).isEqualTo(expectNormalPrice),
+    assertAll(() -> assertThat(actual.getNormalPrice()).isEqualTo(expectNormalPrice),
         () -> assertThat(actual.getLatestPrice()).isEqualTo(expectCurrentPrice),
         () -> assertThat(actual.getBeforeLatestPrice()).isEqualTo(expectCurrentPrice),
         () -> assertThat(actual.getWeeklyLowestPrice()).isEqualTo(expectCurrentPrice),
@@ -37,8 +37,7 @@ class PriceDetailsTest {
         () -> assertThat(actual.getMonthlyLowestPrice()).isEqualTo(expectCurrentPrice),
         () -> assertThat(actual.getMonthlyLowestDate()).isEqualTo(expectDate),
         () -> assertThat(actual.getMonthlyHighestPrice()).isEqualTo(expectCurrentPrice),
-        () -> assertThat(actual.getMonthlyHighestDate()).isEqualTo(expectDate)
-    );
+        () -> assertThat(actual.getMonthlyHighestDate()).isEqualTo(expectDate));
   }
 
   @Nested
@@ -58,9 +57,7 @@ class PriceDetailsTest {
       priceDetails.addLastPrice(product, newPrice);
 
       // then
-      assertThat(priceDetails.getPriceHistories())
-          .usingRecursiveComparison()
-          .isEqualTo(expected);
+      assertThat(priceDetails.getPriceHistories()).usingRecursiveComparison().isEqualTo(expected);
     }
 
     @Test
@@ -75,10 +72,8 @@ class PriceDetailsTest {
       priceDetails.addLastPrice(new Product(), latestPrice);
 
       // then
-      assertAll(
-          () -> assertThat(priceDetails.getLatestPrice()).isEqualTo(latestPrice),
-          () -> assertThat(priceDetails.getBeforeLatestPrice()).isEqualTo(beforePrice)
-      );
+      assertAll(() -> assertThat(priceDetails.getLatestPrice()).isEqualTo(latestPrice),
+          () -> assertThat(priceDetails.getBeforeLatestPrice()).isEqualTo(beforePrice));
     }
 
     @ParameterizedTest
@@ -101,12 +96,10 @@ class PriceDetailsTest {
       priceDetails.addLastPrice(new Product(), newLowestPrice);
 
       // then
-      assertAll(
-          () -> assertThat(priceDetails.getWeeklyLowestPrice()).isEqualTo(newLowestPrice),
+      assertAll(() -> assertThat(priceDetails.getWeeklyLowestPrice()).isEqualTo(newLowestPrice),
           () -> assertThat(priceDetails.getWeeklyLowestDate()).isEqualTo(LocalDate.now()),
           () -> assertThat(priceDetails.getMonthlyLowestPrice()).isEqualTo(newLowestPrice),
-          () -> assertThat(priceDetails.getMonthlyLowestDate()).isEqualTo(LocalDate.now())
-      );
+          () -> assertThat(priceDetails.getMonthlyLowestDate()).isEqualTo(LocalDate.now()));
     }
 
     @ParameterizedTest
@@ -130,12 +123,10 @@ class PriceDetailsTest {
       priceDetails.addLastPrice(new Product(), newPrice);
 
       // then
-      assertAll(
-          () -> assertThat(priceDetails.getWeeklyLowestPrice()).isEqualTo(initialPrice),
+      assertAll(() -> assertThat(priceDetails.getWeeklyLowestPrice()).isEqualTo(initialPrice),
           () -> assertThat(priceDetails.getWeeklyLowestDate()).isEqualTo(initialDate),
           () -> assertThat(priceDetails.getMonthlyLowestPrice()).isEqualTo(initialPrice),
-          () -> assertThat(priceDetails.getMonthlyLowestDate()).isEqualTo(initialDate)
-      );
+          () -> assertThat(priceDetails.getMonthlyLowestDate()).isEqualTo(initialDate));
     }
 
     @ParameterizedTest
@@ -158,12 +149,10 @@ class PriceDetailsTest {
       priceDetails.addLastPrice(new Product(), newHighestPrice);
 
       // then
-      assertAll(
-          () -> assertThat(priceDetails.getWeeklyHighestPrice()).isEqualTo(newHighestPrice),
+      assertAll(() -> assertThat(priceDetails.getWeeklyHighestPrice()).isEqualTo(newHighestPrice),
           () -> assertThat(priceDetails.getWeeklyHighestDate()).isEqualTo(LocalDate.now()),
           () -> assertThat(priceDetails.getMonthlyHighestPrice()).isEqualTo(newHighestPrice),
-          () -> assertThat(priceDetails.getMonthlyHighestDate()).isEqualTo(LocalDate.now())
-      );
+          () -> assertThat(priceDetails.getMonthlyHighestDate()).isEqualTo(LocalDate.now()));
     }
 
     @ParameterizedTest
@@ -187,11 +176,194 @@ class PriceDetailsTest {
       priceDetails.addLastPrice(new Product(), newPrice);
 
       // then
-      assertAll(
-          () -> assertThat(priceDetails.getWeeklyHighestPrice()).isEqualTo(initialPrice),
+      assertAll(() -> assertThat(priceDetails.getWeeklyHighestPrice()).isEqualTo(initialPrice),
           () -> assertThat(priceDetails.getWeeklyHighestDate()).isEqualTo(initialDate),
           () -> assertThat(priceDetails.getMonthlyHighestPrice()).isEqualTo(initialPrice),
-          () -> assertThat(priceDetails.getMonthlyHighestDate()).isEqualTo(initialDate)
+          () -> assertThat(priceDetails.getMonthlyHighestDate()).isEqualTo(initialDate));
+    }
+  }
+
+  @Nested
+  @DisplayName("기간별 최저가 갱신 테스트")
+  class updatePeriodicPricesTest {
+
+    @Test
+    @DisplayName("1주일 최저가 업데이트일이 1주일을 넘었을 경우 1주일 최저가를 업데이트한다.")
+    void updateOutdatedWeeklyLowestTest() throws NoSuchFieldException, IllegalAccessException {
+      // given
+      final int initialPrice = 8_000;
+      final int expectPrice = 9_000;
+      final PriceDetails priceDetails = new PriceDetails(10_000, initialPrice);
+      priceDetails.addLastPrice(new Product(), 9_000);
+
+      final Field createdAt = PriceHistory.class.getDeclaredField("createdAt");
+      createdAt.setAccessible(true);
+      createdAt.set(priceDetails.getPriceHistories().get(0), LocalDateTime.now());
+
+      final Field weeklyLowestDate = PriceDetails.class.getDeclaredField("weeklyLowestDate");
+      weeklyLowestDate.setAccessible(true);
+      weeklyLowestDate.set(priceDetails, LocalDate.now().minusDays(8));
+
+      // when
+      priceDetails.updateOutdatedPeriodicPrices();
+
+      // then
+      assertAll(
+          () -> assertThat(priceDetails.getWeeklyLowestPrice()).isEqualTo(expectPrice),
+          () -> assertThat(priceDetails.getWeeklyLowestDate()).isEqualTo(LocalDate.now())
+      );
+    }
+
+
+    @Test
+    @DisplayName("1주일 최저가 업데이트일이 1주일을 넘지 않았을 경우 1주일 최저가를 업데이트하지 않는다.")
+    void notUpdateOutdatedWeeklyLowestTest() throws NoSuchFieldException, IllegalAccessException {
+      // given
+      final int expectPrice = 8_000;
+      final LocalDate expectDate = LocalDate.now().minusDays(7);
+      final PriceDetails priceDetails = new PriceDetails(10_000, expectPrice);
+      priceDetails.addLastPrice(new Product(), 7_000);
+
+      final Field createdAt = PriceHistory.class.getDeclaredField("createdAt");
+      createdAt.setAccessible(true);
+      createdAt.set(priceDetails.getPriceHistories().get(0), LocalDateTime.now());
+
+      final Field weeklyLowestPrice = PriceDetails.class.getDeclaredField("weeklyLowestPrice");
+      weeklyLowestPrice.setAccessible(true);
+      weeklyLowestPrice.set(priceDetails, expectPrice);
+      final Field weeklyLowestDate = PriceDetails.class.getDeclaredField("weeklyLowestDate");
+      weeklyLowestDate.setAccessible(true);
+      weeklyLowestDate.set(priceDetails, expectDate);
+
+      // when
+      priceDetails.updateOutdatedPeriodicPrices();
+
+      // then
+      assertAll(
+          () -> assertThat(priceDetails.getWeeklyLowestPrice()).isEqualTo(expectPrice),
+          () -> assertThat(priceDetails.getWeeklyLowestDate()).isEqualTo(expectDate)
+      );
+    }
+
+    @Test
+    @DisplayName("1주일 최저가 업데이트일이 1주일을 넘었을 경우 1주일 이내의 가격 중 최저가로 업데이트한다.")
+    void updateWeeklyLowestPriceInWeekTest() throws NoSuchFieldException, IllegalAccessException {
+      // given
+      final int initialPrice = 8_000;
+      final int expectPrice = 7_000;
+      final LocalDate expectDate = LocalDate.now().minusDays(7);
+      final PriceDetails priceDetails = new PriceDetails(10_000, initialPrice);
+      priceDetails.addLastPrice(new Product(), 6_000);
+      priceDetails.addLastPrice(new Product(), 7_000);
+      priceDetails.addLastPrice(new Product(), 8_000);
+
+      final Field createdAt = PriceHistory.class.getDeclaredField("createdAt");
+      createdAt.setAccessible(true);
+      createdAt.set(priceDetails.getPriceHistories().get(0), LocalDateTime.now().minusDays(8));
+      createdAt.set(priceDetails.getPriceHistories().get(1), LocalDateTime.now().minusDays(7));
+      createdAt.set(priceDetails.getPriceHistories().get(2), LocalDateTime.now().minusDays(6));
+
+      final Field weeklyLowestDate = PriceDetails.class.getDeclaredField("weeklyLowestDate");
+      weeklyLowestDate.setAccessible(true);
+      weeklyLowestDate.set(priceDetails, LocalDate.now().minusDays(8));
+
+      // when
+      priceDetails.updateOutdatedPeriodicPrices();
+
+      // then
+      assertAll(
+          () -> assertThat(priceDetails.getWeeklyLowestPrice()).isEqualTo(expectPrice),
+          () -> assertThat(priceDetails.getWeeklyLowestDate()).isEqualTo(expectDate)
+      );
+    }
+
+    @Test
+    @DisplayName("1달 최저가 업데이트일이 1달을 넘었을 경우 1달 최저가를 업데이트한다.")
+    void updateOutdatedMonthlyLowestTest() throws NoSuchFieldException, IllegalAccessException {
+      // given
+      final int initialPrice = 8_000;
+      final int expectPrice = 9_000;
+      final PriceDetails priceDetails = new PriceDetails(10_000, initialPrice);
+      priceDetails.addLastPrice(new Product(), 9_000);
+
+      final Field createdAt = PriceHistory.class.getDeclaredField("createdAt");
+      createdAt.setAccessible(true);
+      createdAt.set(priceDetails.getPriceHistories().get(0), LocalDateTime.now());
+
+      final Field monthlyLowestDate = PriceDetails.class.getDeclaredField("monthlyLowestDate");
+      monthlyLowestDate.setAccessible(true);
+      monthlyLowestDate.set(priceDetails, LocalDate.now().minusDays(31));
+
+      // when
+      priceDetails.updateOutdatedPeriodicPrices();
+
+      // then
+      assertAll(
+          () -> assertThat(priceDetails.getMonthlyLowestPrice()).isEqualTo(expectPrice),
+          () -> assertThat(priceDetails.getMonthlyLowestDate()).isEqualTo(LocalDate.now())
+      );
+    }
+
+
+    @Test
+    @DisplayName("1달 최저가 업데이트일이 1달을 넘지 않았을 경우 1달 최저가를 업데이트하지 않는다.")
+    void notUpdateOutdatedMonthlyLowestTest() throws NoSuchFieldException, IllegalAccessException {
+      // given
+      final int expectPrice = 8_000;
+      final LocalDate expectDate = LocalDate.now().minusDays(30);
+      final PriceDetails priceDetails = new PriceDetails(10_000, expectPrice);
+      priceDetails.addLastPrice(new Product(), 7_000);
+
+      final Field createdAt = PriceHistory.class.getDeclaredField("createdAt");
+      createdAt.setAccessible(true);
+      createdAt.set(priceDetails.getPriceHistories().get(0), LocalDateTime.now());
+
+      final Field monthlyLowestPrice = PriceDetails.class.getDeclaredField("monthlyLowestPrice");
+      monthlyLowestPrice.setAccessible(true);
+      monthlyLowestPrice.set(priceDetails, expectPrice);
+      final Field monthlyLowestDate = PriceDetails.class.getDeclaredField("monthlyLowestDate");
+      monthlyLowestDate.setAccessible(true);
+      monthlyLowestDate.set(priceDetails, expectDate);
+
+      // when
+      priceDetails.updateOutdatedPeriodicPrices();
+
+      // then
+      assertAll(
+          () -> assertThat(priceDetails.getMonthlyLowestPrice()).isEqualTo(expectPrice),
+          () -> assertThat(priceDetails.getMonthlyLowestDate()).isEqualTo(expectDate)
+      );
+    }
+
+    @Test
+    @DisplayName("1달 최저가 업데이트일이 1달을 넘었을 경우 1달 이내의 가격 중 최저가로 업데이트한다.")
+    void updateMonthlyLowestPriceInWeekTest() throws NoSuchFieldException, IllegalAccessException {
+      // given
+      final int initialPrice = 8_000;
+      final int expectPrice = 7_000;
+      final LocalDate expectDate = LocalDate.now().minusDays(30);
+      final PriceDetails priceDetails = new PriceDetails(10_000, initialPrice);
+      priceDetails.addLastPrice(new Product(), 6_000);
+      priceDetails.addLastPrice(new Product(), 7_000);
+      priceDetails.addLastPrice(new Product(), 8_000);
+
+      final Field createdAt = PriceHistory.class.getDeclaredField("createdAt");
+      createdAt.setAccessible(true);
+      createdAt.set(priceDetails.getPriceHistories().get(0), LocalDateTime.now().minusDays(31));
+      createdAt.set(priceDetails.getPriceHistories().get(1), LocalDateTime.now().minusDays(30));
+      createdAt.set(priceDetails.getPriceHistories().get(2), LocalDateTime.now().minusDays(29));
+
+      final Field monthlyLowestDate = PriceDetails.class.getDeclaredField("monthlyLowestDate");
+      monthlyLowestDate.setAccessible(true);
+      monthlyLowestDate.set(priceDetails, LocalDate.now().minusDays(31));
+
+      // when
+      priceDetails.updateOutdatedPeriodicPrices();
+
+      // then
+      assertAll(
+          () -> assertThat(priceDetails.getMonthlyLowestPrice()).isEqualTo(expectPrice),
+          () -> assertThat(priceDetails.getMonthlyLowestDate()).isEqualTo(expectDate)
       );
     }
   }
