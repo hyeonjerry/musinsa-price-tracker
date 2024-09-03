@@ -1,0 +1,19 @@
+<configuration>
+  <appender class="ch.qos.logback.core.ConsoleAppender" name="STDOUT">
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</Pattern>
+    </layout>
+  </appender>
+
+  <appender class="ch.qos.logback.core.FileAppender" name="FILE">
+    <append>true</append>
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+    <file>logs/log.log</file>
+  </appender>
+
+  <root level="info">
+    <appender-ref ref="FILE"/>
+  </root>
+</configuration>

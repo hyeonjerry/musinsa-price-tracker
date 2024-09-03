@@ -1,0 +1,56 @@
+name: Build & Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./msspt
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: gradle
+
+      - name: Cache
+        uses: actions/cache@v4.0.2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+
+      - name: Run build
+        run: ./gradlew build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: msspt.jar
+          path: msspt/build/libs/msspt-*-SNAPSHOT.jar
+
+  deploy:
+    runs-on: self-hosted
+    needs: build
+
+    steps:
+      - name: Remove old jar file
+        run: rm -rf /home/ubuntu/msspt/*.jar
+
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: msspt.jar
+          path: /home/ubuntu/msspt
+
+      - name: Run Deploy Shell Script
+        run: /home/ubuntu/msspt/run.sh
