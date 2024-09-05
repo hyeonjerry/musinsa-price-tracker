@@ -21,7 +21,7 @@ public class ProductApi {
   private final ProductDao productDao;
 
   @GetMapping("/search")
-  public List<ProductDetail> search(
+  public List<ProductSummaryResponse> search(
       @RequestParam final String keyword,
       @RequestParam(defaultValue = "1") final int page
   ) {

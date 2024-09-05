@@ -4,7 +4,6 @@ import com.tonggn.msspt.catalog.query.ProductDetail.Price;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +18,30 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ProductDao {
+
+  public static final RowMapper<ProductSummaryResponse> PRODUCT_SUMMARY_ROW_MAPPER = (rs, rowNum) -> {
+    final long id = rs.getLong("id");
+    final long goodsNo = rs.getLong("goods_no");
+    final String name = rs.getString("name");
+    final int normalPrice = rs.getInt("normal_price");
+    final int latestPrice = rs.getInt("latest_price");
+    final int beforeLatestPrice = rs.getInt("before_latest_price");
+    final int weeklyLowestPrice = rs.getInt("weekly_lowest_price");
+    final String weeklyLowestDate = rs.getString("weekly_lowest_date");
+    final int weeklyHighestPrice = rs.getInt("weekly_highest_price");
+    final String weeklyHighestDate = rs.getString("weekly_highest_date");
+    final int monthlyLowestPrice = rs.getInt("monthly_lowest_price");
+    final String monthlyLowestDate = rs.getString("monthly_lowest_date");
+    final int monthlyHighestPrice = rs.getInt("monthly_highest_price");
+    final String monthlyHighestDate = rs.getString("monthly_highest_date");
+    final String imageUrl = rs.getString("image_url");
+    final String brandName = rs.getString("brand_name");
+
+    return new ProductSummaryResponse(id, goodsNo, name, normalPrice, latestPrice,
+        beforeLatestPrice, weeklyLowestPrice, weeklyLowestDate, weeklyHighestPrice,
+        weeklyHighestDate, monthlyLowestPrice, monthlyLowestDate, monthlyHighestPrice,
+        monthlyHighestDate, imageUrl, brandName);
+  };
 
   private final NamedParameterJdbcTemplate namedJdbc;
 
@@ -62,33 +85,32 @@ public class ProductDao {
     product.addPrice(new Price(priceHistoryId, price, createdAt));
   }
 
-  public List<ProductDetail> findByNameContaining(
+  public List<ProductSummaryResponse> findByNameContaining(
       final String keyword,
       final int limit,
       final int offset
   ) {
     final String sql = """
-        SELECT p.*,
-               ph.id AS price_history_id,
-               ph.price,
-               ph.created_at
-          FROM (SELECT p.id,
-                       p.goods_no,
-                       p.name,
-                       p.normal_price,
-                       p.latest_price,
-                       p.before_latest_price,
-                       p.weekly_lowest_price,
-                       p.weekly_highest_price,
-                       p.monthly_lowest_price,
-                       p.monthly_highest_price,
-                       p.image_url,
-                       b.name AS brand_name
-                FROM product p
-                   JOIN brand b ON p.brand_id = b.brand_id
-                WHERE p.name LIKE :keyword
-                LIMIT :limit OFFSET :offset) p
-                   JOIN price_history ph ON p.id = ph.product_id
+        SELECT p.id,
+               p.goods_no,
+               p.name,
+               p.normal_price,
+               p.latest_price,
+               p.before_latest_price,
+               p.weekly_lowest_price,
+               p.weekly_lowest_date,
+               p.weekly_highest_price,
+               p.weekly_highest_date,
+               p.monthly_lowest_price,
+               p.monthly_lowest_date,
+               p.monthly_highest_price,
+               p.monthly_highest_date,
+               p.image_url,
+               b.name AS brand_name
+        FROM product p
+                 JOIN brand b ON p.brand_id = b.brand_id
+        WHERE p.name LIKE :keyword
+        LIMIT :limit OFFSET :offset;
         """;
 
     final Map<String, Object> params = Map.of(
@@ -97,20 +119,7 @@ public class ProductDao {
         "offset", offset
     );
 
-    final ResultSetExtractor<List<ProductDetail>> productDetailExtractor = rs -> {
-      final HashMap<Long, ProductDetail> products = new HashMap<>();
-      while (rs.next()) {
-        final long productId = rs.getLong("id");
-
-        final ProductDetail product = products.computeIfAbsent(productId,
-            k -> mapToProductDetail(rs));
-
-        addPriceToProductDetail(rs, product);
-      }
-      return products.values().stream().toList();
-    };
-
-    return namedJdbc.query(sql, params, productDetailExtractor);
+    return namedJdbc.query(sql, params, PRODUCT_SUMMARY_ROW_MAPPER);
   }
 
   public List<ProductSummaryResponse> findWeeklyPriceDropProducts(
@@ -144,31 +153,7 @@ public class ProductDao {
 
     final Map<String, Object> params = Map.of("limit", pageSize, "offset", offset);
 
-    final RowMapper<ProductSummaryResponse> priceDropProductSummaryRowMapper = (rs, rowNum) -> {
-      final long id = rs.getLong("id");
-      final long goodsNo = rs.getLong("goods_no");
-      final String name = rs.getString("name");
-      final int normalPrice = rs.getInt("normal_price");
-      final int latestPrice = rs.getInt("latest_price");
-      final int beforeLatestPrice = rs.getInt("before_latest_price");
-      final int weeklyLowestPrice = rs.getInt("weekly_lowest_price");
-      final String weeklyLowestDate = rs.getString("weekly_lowest_date");
-      final int weeklyHighestPrice = rs.getInt("weekly_highest_price");
-      final String weeklyHighestDate = rs.getString("weekly_highest_date");
-      final int monthlyLowestPrice = rs.getInt("monthly_lowest_price");
-      final String monthlyLowestDate = rs.getString("monthly_lowest_date");
-      final int monthlyHighestPrice = rs.getInt("monthly_highest_price");
-      final String monthlyHighestDate = rs.getString("monthly_highest_date");
-      final String imageUrl = rs.getString("image_url");
-      final String brandName = rs.getString("brand_name");
-
-      return new ProductSummaryResponse(id, goodsNo, name, normalPrice, latestPrice,
-          beforeLatestPrice, weeklyLowestPrice, weeklyLowestDate, weeklyHighestPrice,
-          weeklyHighestDate, monthlyLowestPrice, monthlyLowestDate, monthlyHighestPrice,
-          monthlyHighestDate, imageUrl, brandName);
-    };
-
-    return namedJdbc.query(sql, params, priceDropProductSummaryRowMapper);
+    return namedJdbc.query(sql, params, PRODUCT_SUMMARY_ROW_MAPPER);
   }
 
   public ProductDetail findById(final long id) {

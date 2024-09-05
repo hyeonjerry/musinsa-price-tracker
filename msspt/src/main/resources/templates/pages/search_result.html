@@ -17,7 +17,7 @@
     <div th:replace="~{components/searchbar :: searchbar}"></div>
   </div>
 
-  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 row-cols-xxl-6 g-4" id="product-cards">
+  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xxl-5 g-4" id="product-cards">
   </div>
 
   <div class="loading-spinner" id="loading-spinner"
@@ -84,9 +84,8 @@
 
     function mapToCard(product) {
       const line1 = `원가: ${formatPrice(product.normalPrice)}원`;
-      const line2 = `현재 가격: ${formatPrice(product.sortedPrices[0].price)}원`;
-      const line3 = `이전 가격: ${product.sortedPrices.length >= 2 ? formatPrice(
-          product.sortedPrices[1].price) : '-'}원`;
+      const line2 = `현재 가격: ${formatPrice(product.latestPrice)}원`;
+      const line3 = `이전 가격: ${product.beforeLatestPrice}원`;
       return generate(product.id, product.name, product.imageUrl, line1, line2, line3);
     }
 
