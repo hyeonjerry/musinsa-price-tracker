@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko" layout:decorator="~{layout/default}"
+<html lang="ko" layout:decorator="~{layout}"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -25,7 +25,7 @@
   </script>
 </head>
 <body>
-<div th:replace="~{navbar :: navbar}"></div>
+<div th:replace="~{components/navbar :: navbar}"></div>
 
 <th:block layout:fragment="content"></th:block>
 
