@@ -2,21 +2,6 @@
 <html layout:decorate="~{layout}">
 <head>
   <title>MSS Price Tracker</title>
-  <style>
-    .card-title {
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      height: 48px;
-    }
-
-    .card-img-top {
-      height: 200px;
-      object-fit: cover;
-    }
-  </style>
 </head>
 <body>
 
@@ -43,6 +28,7 @@
 
 <th:blcok layout:fragment="script">
   <script src="/js/product-utils.js"></script>
+  <script src="/js/product-card-generator.js"></script>
   <script>
     let currentPage = 1;
     let isLoading = false;
@@ -83,39 +69,10 @@
     }
 
     function mapToCard(product) {
-      const col = document.createElement('div');
-      col.className = 'col';
-
-      const card = document.createElement('div');
-      card.className = 'card';
-
-      const img = document.createElement('img');
-      img.className = 'card-img-top';
-      img.alt = product.name;
-      img.src = product.imageUrl;
-      img.loading = 'lazy';
-      card.appendChild(img);
-
-      const cardBody = document.createElement('div');
-      cardBody.className = 'card-body';
-
-      const cardTitle = document.createElement('h5');
-      cardTitle.className = 'card-title';
-      cardTitle.textContent = product.name;
-      cardBody.appendChild(cardTitle);
-
-      const cardText = document.createElement('p');
-      cardText.className = 'card-text';
-      cardText.innerHTML = `
-        원가: <span>${formatPrice(product.normalPrice)}원</span><br>
-        현재 가격: <span>${formatPrice(product.latestPrice)}원</span><br>
-        1주일 최고가: <span>${formatPrice(product.weeklyHighestPrice)}원</span>
-      `;
-      cardBody.appendChild(cardText);
-
-      card.appendChild(cardBody);
-      col.appendChild(card);
-      return col;
+      const line1 = `원가: ${formatPrice(product.normalPrice)}원`;
+      const line2 = `현재 가격: ${formatPrice(product.latestPrice)}원`;
+      const line3 = `1주일 최고가: ${formatPrice(product.weeklyHighestPrice)}원`;
+      return generate(product.id, product.name, product.imageUrl, line1, line2, line3);
     }
 
     function handleScroll() {
