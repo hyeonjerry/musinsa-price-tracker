@@ -9,11 +9,6 @@
       align-items: center;
     }
 
-    .search-box {
-      width: 100%;
-      max-width: 600px;
-    }
-
     .card-title {
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -33,12 +28,7 @@
 
 <div class="container" layout:fragment="content">
   <div class="search-container my-5">
-    <form action="/products/search" class="search-box" method="get">
-      <div class="input-group">
-        <input class="form-control" name="keyword" placeholder="상품명 입력" type="text">
-        <button class="btn btn-primary" type="submit">Search</button>
-      </div>
-    </form>
+    <div th:replace="~{components/searchbar :: searchbar}"></div>
   </div>
 
   <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 row-cols-xxl-6 g-4" id="product-cards">
