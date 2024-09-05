@@ -41,7 +41,7 @@ public class CatalogUpdateScheduler {
   @Value("${mss.proxy.paid-port}")
   private int proxyPort;
 
-  @Scheduled(cron = "0 0 1 * * *") // 초 분 시 일 월 요일
+  @Scheduled(cron = "0 30 0 * * *") // 초 분 시 일 월 요일
   public void update() {
     final HttpClient httpClient = new ProxyHttpClient(proxyHost, proxyPort);
     final List<Category> categories = categoryRepository.findAll();

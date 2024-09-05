@@ -15,7 +15,7 @@ public class ProxyHttpClient implements HttpClient {
   public ProxyHttpClient(final String proxyHost, final int proxyPort) {
     final Proxy proxy = new Proxy(Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
     final SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-    requestFactory.setProxy(proxy);
+    // requestFactory.setProxy(proxy);
     requestFactory.setReadTimeout(TIMEOUT_MILLIS);
     requestFactory.setConnectTimeout(TIMEOUT_MILLIS);
     this.restTemplate = new RestTemplate(requestFactory);
