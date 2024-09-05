@@ -71,7 +71,7 @@
     function mapToCard(product) {
       const line1 = `원가: ${formatPrice(product.normalPrice)}원`;
       const line2 = `현재 가격: ${formatPrice(product.latestPrice)}원`;
-      const line3 = `1주일 최고가: ${formatPrice(product.weeklyHighestPrice)}원`;
+      const line3 = `주간 최고가: ${formatPrice(product.weeklyHighestPrice)}원`;
       return generate(product.productId, product.name, product.imageUrl, line1, line2, line3);
     }
 
