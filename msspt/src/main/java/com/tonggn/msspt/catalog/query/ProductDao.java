@@ -122,10 +122,12 @@ public class ProductDao {
     return namedJdbc.query(sql, params, PRODUCT_SUMMARY_ROW_MAPPER);
   }
 
-  public List<ProductSummaryResponse> findWeeklyPriceDropProducts(
+  public List<ProductSummaryResponse> findPeriodPriceDropProducts(
       final int pageSize,
-      final int offset
+      final int offset,
+      final PeriodRequest period
   ) {
+    final String priceDropRateColumn = getPriceDropRateColumnByPeriod(period);
     final String sql = """
         SELECT p.id,
                p.goods_no,
@@ -142,18 +144,26 @@ public class ProductDao {
                p.monthly_highest_price,
                p.monthly_highest_date,
                p.image_url,
-               b.name                                                                     AS brand_name,
-               ((p.latest_price - p.weekly_highest_price) / p.weekly_highest_price) * 100 AS drop_rate
+               b.name AS brand_name,
+               %1$s AS drop_rate
         FROM product p
                  JOIN brand b ON p.brand_id = b.brand_id
-        WHERE ((p.latest_price - p.weekly_highest_price) / p.weekly_highest_price) * 100 < 0
-        ORDER BY drop_rate
+        WHERE %1$s < 0
+        ORDER BY %1$s
         LIMIT :limit OFFSET :offset;
-        """;
+        """.formatted(priceDropRateColumn);
 
     final Map<String, Object> params = Map.of("limit", pageSize, "offset", offset);
 
     return namedJdbc.query(sql, params, PRODUCT_SUMMARY_ROW_MAPPER);
+  }
+
+  private String getPriceDropRateColumnByPeriod(final PeriodRequest period) {
+    return switch (period) {
+      case DAILY -> "p.daily_price_drop_rate";
+      case WEEKLY -> "p.weekly_price_drop_rate";
+      case MONTHLY -> "p.monthly_price_drop_rate";
+    };
   }
 
   public ProductDetail findById(final long id) {

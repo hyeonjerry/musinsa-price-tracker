@@ -1,5 +1,6 @@
 package com.tonggn.msspt.catalog.ui;
 
+import com.tonggn.msspt.catalog.query.PeriodRequest;
 import com.tonggn.msspt.catalog.query.ProductDao;
 import com.tonggn.msspt.catalog.query.ProductDetail;
 import com.tonggn.msspt.catalog.query.ProductSummaryResponse;
@@ -30,9 +31,12 @@ public class ProductApi {
   }
 
   @GetMapping("/price-drop")
-  public List<ProductSummaryResponse> priceDrop(@RequestParam(defaultValue = "1") final int page) {
+  public List<ProductSummaryResponse> priceDrop(
+      @RequestParam(defaultValue = "1") final int page,
+      @RequestParam(defaultValue = "weekly") final PeriodRequest period
+  ) {
     final int offset = (page - 1) * PAGE_SIZE;
-    return productDao.findWeeklyPriceDropProducts(PAGE_SIZE, offset);
+    return productDao.findPeriodPriceDropProducts(PAGE_SIZE, offset, period);
   }
 
   @GetMapping("/{id}")

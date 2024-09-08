@@ -10,6 +10,15 @@
     <h3>가격 하락 상품</h3>
   </div>
 
+  <div class="d-flex justify-content-end">
+    <select aria-label="Periods" class="form-select form-select-sm mb-3" id="periods"
+            style="width: auto;">
+      <option value="daily">일간</option>
+      <option selected value="weekly">주간</option>
+      <option value="monthly">월간</option>
+    </select>
+  </div>
+
   <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xxl-5 g-4" id="product-cards">
   </div>
 
@@ -36,6 +45,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       fetchProducts();
       window.addEventListener('scroll', handleScroll);
+      document.getElementById('periods').addEventListener('change', handlePeriodChange);
     });
 
     function fetchProducts() {
@@ -43,10 +53,11 @@
         return;
       }
       isLoading = true;
+      const period = document.getElementById("periods").value;
       const spinner = document.getElementById('loading-spinner');
       spinner.style.display = 'block';
 
-      fetch(`/api/products/price-drop?page=${currentPage}`)
+      fetch(`/api/products/price-drop?page=${currentPage}&period=${period}`)
       .then(response => response.json())
       .then(products => {
         if (products.length === 0) {
@@ -58,7 +69,7 @@
 
         const fragment = document.createDocumentFragment();
         products.forEach(product => {
-          const card = mapToCard(product);
+          const card = mapToCard(period, product);
           fragment.appendChild(card);
         });
         document.getElementById('product-cards').appendChild(fragment);
@@ -68,10 +79,21 @@
       });
     }
 
-    function mapToCard(product) {
+    function mapToCard(period, product) {
+      function generateLine3() {
+        switch (period) {
+          case 'daily':
+            return `이전 가격: ${formatPrice(product.beforeLatestPrice)}원`;
+          case 'weekly':
+            return `주간 최고가: ${formatPrice(product.weeklyHighestPrice)}원`;
+          case 'monthly':
+            return `월간 최고가: ${formatPrice(product.monthlyHighestPrice)}원`;
+        }
+      }
+
       const line1 = `원가: ${formatPrice(product.normalPrice)}원`;
       const line2 = `현재 가격: ${formatPrice(product.latestPrice)}원`;
-      const line3 = `주간 최고가: ${formatPrice(product.weeklyHighestPrice)}원`;
+      const line3 = generateLine3();
       return generate(product.productId, product.name, product.imageUrl, line1, line2, line3);
     }
 
@@ -79,6 +101,12 @@
       if (isBottom()) {
         fetchProducts();
       }
+    }
+
+    function handlePeriodChange() {
+      currentPage = 1;
+      document.getElementById('product-cards').innerHTML = '';
+      fetchProducts();
     }
   </script>
 </th:blcok>
