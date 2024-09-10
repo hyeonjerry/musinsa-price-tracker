@@ -48,7 +48,15 @@
         <table class="table table-striped">
           <thead>
           <tr>
-            <th colspan="2" scope="col">Price Details</th>
+            <th colspan="2" scope="col">
+              Price Details
+              <small>
+                <a class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+                   href="#" id="product-url">
+                  구매하러 가기
+                </a>
+              </small>
+            </th>
           </tr>
           </thead>
           <tbody>
@@ -112,6 +120,7 @@
       function renderProductDetail(product) {
         document.getElementById('product-brand').textContent = product.brandName;
         document.getElementById('product-name').textContent = product.name;
+        document.getElementById('product-url').href = product.productUrl;
 
         document.getElementById('product-image').src = product.imageUrl;
         document.getElementById('product-normal-price').textContent = `${formatPrice(

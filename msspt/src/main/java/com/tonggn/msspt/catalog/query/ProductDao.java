@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -45,10 +46,14 @@ public class ProductDao {
 
   private final NamedParameterJdbcTemplate namedJdbc;
 
+  @Value("${mss.product-url}")
+  private String productUrlPrefix;
+
   @SneakyThrows(SQLException.class)
   private ProductDetail mapToProductDetail(final ResultSet rs) {
     final long productId = rs.getLong("id");
     final long goodsNo = rs.getLong("goods_no");
+    final String productUrl = productUrlPrefix + "/" + goodsNo;
     final String name = rs.getString("name");
     final int normalPrice = rs.getInt("normal_price");
     final int latestPrice = rs.getInt("latest_price");
@@ -63,6 +68,7 @@ public class ProductDao {
     return new ProductDetail(
         productId,
         goodsNo,
+        productUrl,
         name,
         normalPrice,
         latestPrice,

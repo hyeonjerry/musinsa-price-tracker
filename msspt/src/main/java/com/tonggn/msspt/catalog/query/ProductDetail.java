@@ -5,6 +5,7 @@ import java.util.List;
 public record ProductDetail(
     long id,
     long goodsNo,
+    String productUrl,
     String name,
     int normalPrice,
     int latestPrice,

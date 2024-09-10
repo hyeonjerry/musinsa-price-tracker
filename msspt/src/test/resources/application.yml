@@ -22,6 +22,7 @@ logging:
 
 mss:
   api-url: https://api.url?category=%s&page=%s
+  product-url: https://example.com
   proxy:
     free-list-url: https://proxy.list.url
     paid-host: https://paid.proxy.host

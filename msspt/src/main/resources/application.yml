@@ -13,6 +13,7 @@ spring:
 
 mss:
   api-url: ${API_URL}
+  product-url: ${PRODUCT_URL}
   proxy:
     free-list-url: ${PROXY_FREE_LIST_URL}
     paid-host: ${PROXY_PAID_HOST}
