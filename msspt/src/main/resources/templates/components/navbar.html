@@ -1,16 +1,27 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiary" th:fragment="navbar">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/">MSSPT</a>
+<nav class="navbar sticky-top bg-dark border-bottom border-body navbar-expand-lg"
+     data-bs-theme="dark" th:fragment="navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <svg class="bi bi-graph-up-arrow me-2" fill="currentColor" height="16" viewBox="0 0 16 16"
+           width="16" xmlns="http://www.w3.org/2000/svg">
+        <path
+            d="M0 0h1v15h15v1H0zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5"
+            fill-rule="evenodd"/>
+      </svg>
+      <strong>MUSSAPT</strong>
+    </a>
+
     <button aria-controls="navbarSupportedContent" aria-expanded="false"
             aria-label="Toggle navigation"
             class="navbar-toggler" data-bs-target="#navbarSupportedContent"
             data-bs-toggle="collapse" type="button">
       <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link" href="/products/price-drop">가격 하락 상품</a>
+          <a class="nav-link text-white" href="/products/price-drop">가격 하락 상품</a>
         </li>
       </ul>
     </div>
