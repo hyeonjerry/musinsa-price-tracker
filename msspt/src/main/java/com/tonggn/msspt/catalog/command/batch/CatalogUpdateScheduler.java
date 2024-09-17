@@ -10,8 +10,10 @@ import com.tonggn.msspt.catalog.command.domain.category.Category;
 import com.tonggn.msspt.catalog.command.domain.category.CategoryRepository;
 import com.tonggn.msspt.catalog.utils.CatalogItem;
 import com.tonggn.msspt.catalog.utils.CatalogParser;
+import com.tonggn.msspt.catalog.utils.CatalogUpdatedEvent;
 import com.tonggn.msspt.catalog.utils.HttpClient;
 import com.tonggn.msspt.catalog.utils.ProxyHttpClient;
+import com.tonggn.msspt.common.Events;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -48,7 +50,7 @@ public class CatalogUpdateScheduler {
     for (final Category category : categories) {
       updateCatalogByCategory(category, httpClient);
     }
-    priceDetailUpdateService.updateOutdatedPrices();
+    Events.publish(new CatalogUpdatedEvent());
   }
 
   private void updateCatalogByCategory(

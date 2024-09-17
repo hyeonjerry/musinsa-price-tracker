@@ -12,8 +12,16 @@ public class PriceDetailUpdateService {
 
   private final ProductRepository productRepository;
 
-  public void updateOutdatedPrices() {
-    productRepository.findProductsToUpdatePriceDetails()
+  public long getMinimumProductId() {
+    return productRepository.findMinimumProductId();
+  }
+
+  public long getMaximumProductId() {
+    return productRepository.findMaximumProductId();
+  }
+
+  public void updateOutdatedPrices(final long startProductId, final long endProductId) {
+    productRepository.findProductsToUpdatePriceDetails(startProductId, endProductId)
         .forEach(product -> product.getPriceDetails().updateOutdatedPeriodicPrices());
   }
 }

@@ -12,11 +12,18 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       select p
       from Product p
       join fetch p.priceDetails.priceHistories ph
-      where (p.priceDetails.weeklyLowestDate < subdate(current_date, 7)
-      or p.priceDetails.weeklyHighestDate < subdate(current_date, 7)
-      or p.priceDetails.monthlyLowestDate < subdate(current_date, 30)
-      or p.priceDetails.monthlyHighestDate < subdate(current_date, 30))
-      and ph.createdAt > subdate(current_date, 30)
+      where p.id between :startId and :endId
+          and (p.priceDetails.weeklyLowestDate < subdate(current_date, 7)
+          or p.priceDetails.weeklyHighestDate < subdate(current_date, 7)
+          or p.priceDetails.monthlyLowestDate < subdate(current_date, 30)
+          or p.priceDetails.monthlyHighestDate < subdate(current_date, 30))
+          and ph.createdAt > subdate(current_date, 30)
       """)
-  List<Product> findProductsToUpdatePriceDetails();
+  List<Product> findProductsToUpdatePriceDetails(Long startId, Long endId);
+
+  @Query("select min(p.id) from Product p")
+  Long findMinimumProductId();
+
+  @Query("select max(p.id) from Product p")
+  Long findMaximumProductId();
 }
