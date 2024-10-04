@@ -19,6 +19,11 @@ public class ProxyHttpClient implements HttpClient {
     requestFactory.setReadTimeout(TIMEOUT_MILLIS);
     requestFactory.setConnectTimeout(TIMEOUT_MILLIS);
     this.restTemplate = new RestTemplate(requestFactory);
+    this.restTemplate.getInterceptors()
+        .add(((request, body, execution) -> {
+          request.getHeaders().add("User-Agent", "Mozilla/5.0");
+          return execution.execute(request, body);
+        }));
   }
 
   @Override
